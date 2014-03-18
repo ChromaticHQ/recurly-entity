@@ -1,0 +1,203 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function recurly_entity_menu() {
+  $items = array();
+  $items['recurly/subscription-plan/%recurly_subscription_plan'] = array(
+    'page callback' => 'recurly_subscription_plan_view',
+    'page arguments' => array(2),
+    'access arguments' => array('administer recurly'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['recurly/subscription-plan/%recurly_subscription_plan/edit'] = array(
+    'page callback' => 'recurly_subscription_plan_edit',
+    'page arguments' => array(3),
+    'access arguments' => array('administer recurly'),
+    'type' => MENU_CALLBACK,
+  );
+
+  // Note that we don't currently support adding a completely new subscription
+  // plan to Recurly. Instead, they must be created in Recurly, and then
+  // imported into the site to manage any custom field data.
+  $items['recurly/subscription-plan/add/%recurly_subscription_plan_code'] = array(
+    'page callback' => 'recurly_subscription_plan_add',
+    'page arguments' => array(3),
+    'access arguments' => array('administer recurly'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function recurly_entity_entity_info() {
+  return array(
+    'recurly_subscription_plan' => array(
+      'label' => t('Subscription Plan'),
+      'plural label' => t('Subscription Plans'),
+      'entity class' => 'RecurlySubscriptionPlan',
+      'controller class' => 'RecurlySubscriptionPlanController',
+      'base table' => 'recurly_subscription_plan',
+      'entity cache' => TRUE,
+      'entity keys' => array(
+        'id' => 'id',
+      ),
+      // Use the default label() and uri() functions
+      'label callback' => 'entity_class_label',
+      'uri callback' => 'entity_class_uri',
+      'access callback' => 'recurly_entity_subscription_access',
+      'fieldable' => TRUE,
+      'bundles' => array(
+        'recurly_subscription_plan' => array(
+          'label' => t('Subscription plan'),
+          'admin' => array(
+            'path' => 'admin/config/services/recurly/subscription-plans/fields',
+            'access arguments' => array('administer recurly'),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Access callback for Subscription Plans.
+ */
+function recurly_entity_subscription_access($op, $subscription_plan = NULL, $account = NULL) {
+  return user_access('administer recurly', $account);
+}
+
+/**
+ * Load a single subscription plan entity.
+ *
+ * @param int $id
+ *   The entity id of the subscription plan.
+ *
+ * @return RecurlySubscriptionPlan
+ *   The RecurlySubscriptionPlan entity.
+ */
+function recurly_subscription_plan_load($id) {
+  return entity_load_single('recurly_subscription_plan', $id);
+}
+
+/**
+ * Load a single subscription plan from Recurly.
+ *
+ * @param string $plan_code
+ *   The subscription plan code as defined in Recurly.
+ *
+ * @return RecurlySubscriptionPlan
+ *   The RecurlySubscriptionPlan entity.
+ */
+function recurly_subscription_plan_code_load($plan_code) {
+  return entity_get_controller('recurly_subscription_plan')->loadFromRecurly($plan_code);
+}
+
+/**
+ * View a subscription plan.
+ *
+ * @param RecurlySubscriptionPlan $subscription_plan
+ *
+ * @return
+ *   HTML representing the subscription plan.
+ */
+function recurly_subscription_plan_view(RecurlySubscriptionPlan $subscription_plan) {
+  // TODO: Turn this into a theme function with something actually usable. For
+  // now, this is just for developers to inspect loaded data.
+
+  // Print the plan nicely if devel is enabled.
+  if (function_exists('kprint_r')) {
+    $output = kprint_r($subscription_plan, TRUE);
+  }
+  else {
+    $output = '<dl>';
+    foreach (get_object_vars($subscription_plan) as $property => $value) {
+      $output .= '<dt>' . check_plain($property) . '</dt>';
+      if (is_scalar($value)) {
+        $output .= '<dd>' . check_plain($value) . '</dd>';
+      }
+    }
+    $output .= '</dl>';
+  }
+
+  return $output;
+}
+
+/**
+ * Page callback to add a new Subscription Plan.
+ *
+ * This is split out from editing an existing plan as new subscription plans
+ * must exist in Recurly first. In order to load this form, we must be passed in
+ * that remote subscription plan so we can pull it's ID and other properties.
+ *
+ * TODO: Move this to recurly_entity.admin.inc.
+ *
+ * @param RecurlySubscriptionPlan $subscription_plan
+ *   The subscription plan object loaded from Recurly and ready to present for
+ *   saving.
+ *
+ * @return string
+ *   The HTML of the form to import the subscription plan.
+ */
+function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_plan) {
+  // This is a bit raw but only happens if someone manually browses to the /add
+  // URL.
+  $local_plan = entity_get_controller('recurly_subscription_plan')->loadByPlanCode($subscription_plan->plan_code);
+  if (isset($local_plan)) {
+    drupal_set_message(t('This subscription plan has already been added. Edit the existing plan or import a different plan.'));
+    drupal_goto('recurly/subscription-plan/' . $local_plan->id);
+  }
+
+  $subscription_plan->save();
+  return t('This will become the form to save the plan along with custom field data. For now, the plan has been automatically saved.');
+}
+
+/**
+ * Page callback to edit a subscription plan.
+ *
+ * TODO: Move to recurly_entity.admin.inc
+ */
+function recurly_subscription_plan_edit($subscription_plan) {
+  return t("This will become the form for editing a subscription plan's local fields.");
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Alter the subscription plan listing form to allow importing of plans as local
+ * Subscription Plan entities.
+ */
+function recurly_entity_form_recurly_subscription_plans_form_alter(&$form, &$form_state, $form_id) {
+  foreach ($form['#plans'] as $plan_code => &$details) {
+    // Make it clear that we are editing this plan off-site.
+    if (isset($details['operations']['#links']['edit'])) {
+      $details['operations']['#links']['edit']['title'] = t('edit at recurly');
+    }
+
+    // Add links to import or edit a local plan entity.
+    // TODO: This won't totally work as expected until we fully unifiy our
+    // loading code and implement isNew().
+    $plan_entity = entity_get_controller('recurly_subscription_plan')->loadByPlanCode($plan_code);
+    if (!$plan_entity || !isset($plan_entity->id)) {
+      $details['operations']['#links']['import'] = array(
+        'title' => t('import subscription plan'),
+        'href' => 'recurly/subscription-plan/add/' . $plan_code,
+      );
+    }
+    else {
+      $uri = entity_uri('recurly_subscription_plan', $plan_entity);
+      $path = $uri['path'];
+
+      $details['operations']['#links']['edit_entity'] = array(
+        'title' => t('edit subscription fields'),
+        'href' => $path,
+      );
+    }
+  }
+}
+

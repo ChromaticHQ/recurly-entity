@@ -1,0 +1,12 @@
+name = Recurly Entities
+description = Exposes Recurly objects through Drupal's Entity API
+dependencies[] = entity
+dependencies[] = entitycache
+core = 7.x
+package = Recurly
+
+files[] = includes/RecurlyEntity.inc
+files[] = includes/RecurlyRemoteEntity.inc
+files[] = includes/RecurlySubscriptionPlanController.inc
+files[] = includes/RecurlySubscriptionPlan.inc
+

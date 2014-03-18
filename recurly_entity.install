@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function recurly_entity_schema() {
+  $schema = array();
+
+  $schema['recurly_subscription_plan'] = array(
+    'description' => 'Stores Recurly Subscription Plans.',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique subscription plan item ID.',
+      ),
+      'plan_code' => array(
+        'description' => 'The code of the subscription plan.',
+        'type' => 'varchar',
+        // TODO: Find the length.
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'unique keys' => array(
+      'plan_code' => array('plan_code'),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['cache_entity_recurly_subscription_plan'] = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['cache_entity_recurly_subscription_plan']['description'] = 'Cached data for Recurly subscription plans.';
+
+  return $schema;
+}
+
