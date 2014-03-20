@@ -8,6 +8,18 @@
 class RecurlySubscriptionPlanController extends EntityAPIController implements RecurlyRemoteEntity {
 
   /**
+   * Store entities in the entity cache.
+   *
+   * @param array $entities
+   *   An array of RecurlySubscriptionPlan entities.
+   */
+  public function entityCacheSet(array $entities) {
+    if (!empty($this->entityInfo['entity cache']) && !empty($entities)) {
+      EntityCacheControllerHelper::entityCacheSet($this, $entities);
+    }
+  }
+
+  /**
    * @{inheritdoc}
    *
    * @return RecurlySubscriptionPlan
