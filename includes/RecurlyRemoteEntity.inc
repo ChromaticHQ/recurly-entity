@@ -13,6 +13,6 @@ interface RecurlyRemoteEntity {
    *   The ID of the entity to load, such as the plan_code for a Subscription
    *   Plan or the account_code for an Account.
    */
-  public static function loadFromRecurly($id);
+  public function loadFromRecurly($id);
 }
 

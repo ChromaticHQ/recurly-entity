@@ -7,7 +7,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *
    * @return RecurlySubscriptionPlan
    */
-  public static function loadFromRecurly($plan_code) {
+  public function loadFromRecurly($plan_code) {
     recurly_client_initialize();
     $plan = Recurly_Plan::get($plan_code);
 
