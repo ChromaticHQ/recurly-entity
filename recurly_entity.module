@@ -12,13 +12,6 @@ function recurly_entity_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['recurly/subscription-plan/%recurly_subscription_plan/edit'] = array(
-    'page callback' => 'recurly_subscription_plan_edit',
-    'page arguments' => array(3),
-    'access arguments' => array('administer recurly'),
-    'type' => MENU_CALLBACK,
-  );
-
   // Note that we don't currently support adding a completely new subscription
   // plan to Recurly. Instead, they must be created in Recurly, and then
   // imported into the site to manage any custom field data.
@@ -56,10 +49,16 @@ function recurly_entity_entity_info() {
         'recurly_subscription_plan' => array(
           'label' => t('Subscription plan'),
           'admin' => array(
-            'path' => 'admin/config/services/recurly/subscription-plans/fields',
+            'path' => 'admin/config/services/recurly/subscription-plans',
             'access arguments' => array('administer recurly'),
           ),
         ),
+      ),
+      'module' => 'recurly_entity',
+      'admin ui' => array(
+        'path' => 'admin/content/recurly_subscription_plans',
+        'file' => 'includes/recurly_entity.admin.inc',
+        'controller class' => 'RecurlySubscriptionPlanUIController',
       ),
     ),
   );
@@ -158,15 +157,6 @@ function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_pla
 }
 
 /**
- * Page callback to edit a subscription plan.
- *
- * TODO: Move to recurly_entity.admin.inc
- */
-function recurly_subscription_plan_edit($subscription_plan) {
-  return t("This will become the form for editing a subscription plan's local fields.");
-}
-
-/**
  * Implements hook_form_BASE_FORM_ID_alter().
  *
  * Alter the subscription plan listing form to allow importing of plans as local
@@ -190,12 +180,9 @@ function recurly_entity_form_recurly_subscription_plans_form_alter(&$form, &$for
       );
     }
     else {
-      $uri = entity_uri('recurly_subscription_plan', $plan_entity);
-      $path = $uri['path'];
-
       $details['operations']['#links']['edit_entity'] = array(
         'title' => t('edit subscription fields'),
-        'href' => $path,
+        'href' => 'admin/content/recurly_subscription_plans/manage/' . $plan_entity->id,
       );
     }
   }
