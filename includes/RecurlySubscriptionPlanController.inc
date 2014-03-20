@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @class
+ * Contains all methods that have been overridden for CRUD operations for
+ * Recurly Subscription Plans.
+ */
 class RecurlySubscriptionPlanController extends EntityAPIController implements RecurlyRemoteEntity {
 
   /**
