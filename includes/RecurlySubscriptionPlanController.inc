@@ -47,7 +47,9 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
       }
     }
 
-    return new RecurlySubscriptionPlan($values);
+    $plan_entity = new RecurlySubscriptionPlan($values);
+    $this->entityCacheSet(array($plan_entity));
+    return $plan;
   }
 
   /**
