@@ -6,27 +6,6 @@
  */
 
 /**
- * UI controller.
- */
-class RecurlySubscriptionPlanUIController extends EntityDefaultUIController {
-  /**
-   * Overrides hook_menu() defaults.
-   */
-  public function hook_menu() {
-    $items = parent::hook_menu();
-
-    $items[$this->path]['type'] = MENU_LOCAL_TASK;
-
-    // Remove the 'Add subscription plan' link.
-    if (isset($items[$this->path . '/add'])) {
-      unset($items[$this->path . '/add']);
-    }
-
-    return $items;
-  }
-}
-
-/**
  * Form callback for the Subscription plan edit form.
  *
  * @param $subscription_plan
@@ -34,10 +13,6 @@ class RecurlySubscriptionPlanUIController extends EntityDefaultUIController {
  */
 function recurly_subscription_plan_form($form, &$form_state, $subscription_plan) {
   $form = array();
-
-  // $plan_code = $subscription_plan->plan_code;
-  // $plan_entity = recurly_subscription_plan_code_load($plan_code);
-  // drupal_set_title(t('Edit !plan_name', array('!plan_name' => $plan_entity->name)));
 
   $form_state['recurly_subscription_plan'] = $subscription_plan;
   $form_state['entity_type'] = 'recurly_subscription_plan';

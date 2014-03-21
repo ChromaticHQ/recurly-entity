@@ -5,9 +5,10 @@ dependencies[] = entitycache
 core = 7.x
 package = Recurly
 
-files[] = includes/recurly_entity.admin.inc
+files[] = recurly_entity.admin.inc
 files[] = includes/RecurlyEntity.inc
 files[] = includes/RecurlyRemoteEntity.inc
 files[] = includes/RecurlySubscriptionPlanController.inc
+files[] = includes/RecurlySubscriptionPlanUIController.inc
 files[] = includes/RecurlySubscriptionPlan.inc
 

@@ -57,7 +57,7 @@ function recurly_entity_entity_info() {
       'module' => 'recurly_entity',
       'admin ui' => array(
         'path' => 'admin/content/recurly_subscription_plans',
-        'file' => 'includes/recurly_entity.admin.inc',
+        'file' => 'recurly_entity.admin.inc',
         'controller class' => 'RecurlySubscriptionPlanUIController',
       ),
     ),
