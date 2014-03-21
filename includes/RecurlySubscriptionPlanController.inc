@@ -71,5 +71,24 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
       return reset($entities);
     }
   }
+
+  /**
+   * Map an Entity ID to a Recurly plan code.
+   *
+   * @param int $entity_id
+   *   The entity ID of the subscription plan.
+   *
+   * @return string
+   *   The unique Recurly plan code.
+   */
+  public function planCode($entity_id) {
+    // TODO: Check our static cache first.
+    // TODO: Throw an exception if $entity_id doesn't exist.
+    return db_select('recurly_subscription_plan', 's')
+      ->fields('s', array('plan_code'))
+      ->condition('s.id', $entity_id)
+      ->execute()
+      ->fetchField();
+  }
 }
 
