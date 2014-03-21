@@ -12,7 +12,7 @@ class RecurlySubscriptionPlan extends RecurlyEntity {
   public function __construct(array $values = array(), $entityType = 'recurly_subscription_plan') {
     // We need to map to a local ID if possible. This can happen if a plan has
     // been saved locally but our entity cache is empty.
-    if (!$values['id']) {
+    if (!isset($values['id'])) {
       $id = entity_get_controller('recurly_subscription_plan')
         ->entityId($values['plan_code']);
       if ($id) {
