@@ -64,6 +64,11 @@ function recurly_entity_entity_info() {
           ),
         ),
       ),
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full subscription plan'),
+        ),
+      ),
     ),
   );
 }
