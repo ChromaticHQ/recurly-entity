@@ -153,7 +153,8 @@ function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_pla
   }
 
   $subscription_plan->save();
-  return t('This will become the form to save the plan along with custom field data. For now, the plan has been automatically saved.');
+  drupal_set_message(t('The subscription plan was successfully imported. Local data can be edited here.'));
+  drupal_goto('admin/content/recurly_subscription_plans/manage/' . $subscription_plan->id);
 }
 
 /**
