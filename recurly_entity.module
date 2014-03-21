@@ -65,10 +65,25 @@ function recurly_entity_entity_info() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function recurly_entity_permission() {
+  $permissions = array(
+    'administer recurly subscription plans' => array(
+      'title' => t('Administer Recurly subscription plans'),
+      'description' => t('Allows users to manage imported Recurly subscription plans.'),
+      'restrict access' => TRUE,
+    ),
+  );
+
+  return $permissions;
+}
+
+/**
  * Access callback for Subscription Plans.
  */
 function recurly_entity_subscription_access($op, $subscription_plan = NULL, $account = NULL) {
-  return user_access('administer recurly', $account);
+  return user_access('administer recurly subscription plans', $account);
 }
 
 /**
