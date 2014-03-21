@@ -34,7 +34,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
     if (!($this->cacheComplete && $ids === FALSE && !$conditions) && ($ids === FALSE || $ids)) {
       // TODO: This should be one call, not many.
       foreach ($ids as $id) {
-        $entities[] = $this->loadFromRecurly($this->planCode($id));
+        $entities[] = $this->loadFromRecurly($this->recurlyCode($id));
       }
     }
 
@@ -138,7 +138,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    * @return string
    *   The unique Recurly plan code.
    */
-  public function planCode($entity_id) {
+  public function recurlyCode($entity_id) {
     // TODO: Check our static cache first.
     // TODO: Throw an exception if $entity_id doesn't exist.
     return db_select('recurly_subscription_plan', 's')
