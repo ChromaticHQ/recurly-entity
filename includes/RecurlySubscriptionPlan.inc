@@ -21,12 +21,5 @@ class RecurlySubscriptionPlan extends RecurlyEntity {
       'path' => 'recurly/subscription-plan/' . $this->id,
     );
   }
-
-  /**
-   * Override defaultLabel().
-   */
-  public function defaultLabel() {
-    return $this->plan_code;
-  }
 }
 
