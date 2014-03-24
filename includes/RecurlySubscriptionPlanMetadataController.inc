@@ -17,6 +17,67 @@ class RecurlySubscriptionPlanMetadataController extends EntityDefaultMetadataCon
       'schema field' => 'plan_code',
       'setter callback' => 'entity_property_verbatim_set',
     );
+    $info[$this->type]['properties']['description'] = array(
+      'label' => t('Description'),
+      'type' => 'string',
+      'description' => t('Subscription plan subscription'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['display_donation_amounts'] = array(
+      'label' => t('Display donation amounts'),
+      'type' => 'boolean',
+      'description' => t('Subscription plan donation amounts'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['display_quantity'] = array(
+      'label' => t('Display quantity'),
+      'type' => 'boolean',
+      'description' => t('Subscription plan quantity'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['display_phone_number'] = array(
+      'label' => t('Display phone number'),
+      'type' => 'boolean',
+      'description' => t('Subscription plan phone number'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['bypass_hosted_confirmation'] = array(
+      'label' => t('Bypass hosted confirmation'),
+      'type' => 'boolean',
+      'description' => t('Subscription plan phone number'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['unit_name'] = array(
+      'label' => t('Unit name'),
+      'type' => 'string',
+      'description' => t('Subscription plan unit name'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['plan_interval_length'] = array(
+      'label' => t('Plan interval length'),
+      'type' => 'integer',
+      'description' => t('Subscription plan interval length'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['trial_interval_length'] = array(
+      'label' => t('Trial interval length'),
+      'type' => 'integer',
+      'description' => t('Subscription plan trial interval length'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['trial_interval_unit'] = array(
+      'label' => t('Trial interval unit'),
+      'type' => 'string',
+      'description' => t('Subscription plan trial unit name'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+    $info[$this->type]['properties']['accounting_code'] = array(
+      'label' => t('Accounting code'),
+      'type' => 'string',
+      'description' => t('Subscription plan accounting code'),
+      'setter callback' => 'entity_property_verbatim_set',
+    );
+
     return $info;
   }
 }
