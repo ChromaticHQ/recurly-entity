@@ -94,7 +94,7 @@ function recurly_entity_theme() {
   $entity_info = entity_get_info('recurly_subscription_plan');
   foreach (array_keys($entity_info['view modes']) as $view_mode) {
     $info['recurly_subscription_plan__' . $view_mode] = array(
-      'variables' => $info['recurly_subscription_plan']['variables'],
+      'variables' => array('content' => NULL),
       'path' => drupal_get_path('module', 'recurly_entity') . '/theme',
       'template' => 'recurly_subscription_plan--' . $view_mode,
     );
