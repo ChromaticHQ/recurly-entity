@@ -110,25 +110,8 @@ function recurly_subscription_plan_code_load($plan_code) {
  *   HTML representing the subscription plan.
  */
 function recurly_subscription_plan_view(RecurlySubscriptionPlan $subscription_plan) {
-  // TODO: Turn this into a theme function with something actually usable. For
-  // now, this is just for developers to inspect loaded data.
-
-  // Print the plan nicely if devel is enabled.
-  if (function_exists('kprint_r')) {
-    $output = kprint_r($subscription_plan, TRUE);
-  }
-  else {
-    $output = '<dl>';
-    foreach (get_object_vars($subscription_plan) as $property => $value) {
-      $output .= '<dt>' . check_plain($property) . '</dt>';
-      if (is_scalar($value)) {
-        $output .= '<dd>' . check_plain($value) . '</dd>';
-      }
-    }
-    $output .= '</dl>';
-  }
-
-  return $output;
+  drupal_set_title($subscription_plan->label());
+  return entity_view('recurly_subscription_plan', array($subscription_plan));
 }
 
 /**
