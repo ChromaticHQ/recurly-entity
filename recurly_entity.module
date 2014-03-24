@@ -81,6 +81,21 @@ function recurly_entity_permission() {
 }
 
 /**
+ * Implements hook_help().
+ */
+function recurly_entity_help($path, $arg) {
+  switch ($path) {
+    case 'admin/content/recurly_subscription_plans':
+      $output = '<p>' . t('Subscription plans must be imported from Recurly.com before they can be edited.') . '</p>';
+      if (user_access('administer recurly')) {
+        $settings_link = l(t('Recurly module settings'), 'admin/config/services/recurly/subscription-plans');
+        $output .= '<p>' . t('Import subscription plans in the !settings_link.', array('!settings_link' => $settings_link)) . '</p>';
+      }
+      return $output;
+  }
+}
+
+/**
  * Access callback for Subscription Plans.
  */
 function recurly_entity_subscription_access($op, $subscription_plan = NULL, $account = NULL) {
