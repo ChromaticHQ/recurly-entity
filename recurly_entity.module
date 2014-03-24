@@ -43,6 +43,7 @@ function recurly_entity_entity_info() {
       'entity class' => 'RecurlySubscriptionPlan',
       'controller class' => 'RecurlySubscriptionPlanController',
       'metadata controller class' => 'RecurlySubscriptionPlanMetadataController',
+      'extra fields controller class' => 'EntityDefaultExtraFieldsController',
       'base table' => 'recurly_subscription_plan',
       'entity cache' => TRUE,
       'entity keys' => array(
