@@ -42,10 +42,12 @@ function recurly_entity_entity_info() {
       'plural label' => t('Subscription Plans'),
       'entity class' => 'RecurlySubscriptionPlan',
       'controller class' => 'RecurlySubscriptionPlanController',
+      'metadata controller class' => 'RecurlySubscriptionPlanMetadataController',
       'base table' => 'recurly_subscription_plan',
       'entity cache' => TRUE,
       'entity keys' => array(
         'id' => 'id',
+        'label' => 'name',
       ),
       // Use the default label() and uri() functions
       'label callback' => 'entity_class_label',

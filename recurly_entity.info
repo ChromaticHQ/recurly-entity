@@ -7,6 +7,7 @@ package = Recurly
 
 files[] = includes/RecurlyEntity.inc
 files[] = includes/RecurlyRemoteEntity.inc
-files[] = includes/RecurlySubscriptionPlanController.inc
 files[] = includes/RecurlySubscriptionPlan.inc
+files[] = includes/RecurlySubscriptionPlanController.inc
+files[] = includes/RecurlySubscriptionPlanMetadataController.inc
 
