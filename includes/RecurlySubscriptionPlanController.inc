@@ -84,7 +84,13 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
     }
 
     $plan_entity = new RecurlySubscriptionPlan($values);
-    $this->entityCacheSet(array($plan_entity));
+
+    // Update our local entity cache, but only if we have saved this plan
+    // locally.
+    if (isset($plan_entity->id)) {
+      $this->entityCacheSet(array($plan_entity));
+    }
+
     return $plan_entity;
   }
 
