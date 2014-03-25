@@ -12,13 +12,6 @@ function recurly_entity_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['recurly/subscription-plan/%recurly_subscription_plan/edit'] = array(
-    'page callback' => 'recurly_subscription_plan_edit',
-    'page arguments' => array(3),
-    'access arguments' => array('administer recurly'),
-    'type' => MENU_CALLBACK,
-  );
-
   // Note that we don't currently support adding a completely new subscription
   // plan to Recurly. Instead, they must be created in Recurly, and then
   // imported into the site to manage any custom field data.
@@ -59,10 +52,16 @@ function recurly_entity_entity_info() {
         'recurly_subscription_plan' => array(
           'label' => t('Subscription plan'),
           'admin' => array(
-            'path' => 'admin/config/services/recurly/subscription-plans/fields',
+            'path' => 'admin/config/services/recurly/subscription-plans',
             'access arguments' => array('administer recurly'),
           ),
         ),
+      ),
+      'module' => 'recurly_entity',
+      'admin ui' => array(
+        'path' => 'admin/content/recurly_subscription_plans',
+        'file' => 'recurly_entity.admin.inc',
+        'controller class' => 'RecurlySubscriptionPlanUIController',
       ),
       'view modes' => array(
         'full' => array(
@@ -74,10 +73,40 @@ function recurly_entity_entity_info() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function recurly_entity_permission() {
+  $permissions = array(
+    'administer recurly subscription plans' => array(
+      'title' => t('Administer Recurly subscription plans'),
+      'description' => t('Allows users to manage imported Recurly subscription plans.'),
+      'restrict access' => TRUE,
+    ),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_help().
+ */
+function recurly_entity_help($path, $arg) {
+  switch ($path) {
+    case 'admin/content/recurly_subscription_plans':
+      $output = '<p>' . t('Subscription plans must be imported from Recurly.com before they can be edited.') . '</p>';
+      if (user_access('administer recurly')) {
+        $settings_link = l(t('Recurly module settings'), 'admin/config/services/recurly/subscription-plans');
+        $output .= '<p>' . t('Import subscription plans in the !settings_link.', array('!settings_link' => $settings_link)) . '</p>';
+      }
+      return $output;
+  }
+}
+
+/**
  * Access callback for Subscription Plans.
  */
 function recurly_entity_subscription_access($op, $subscription_plan = NULL, $account = NULL) {
-  return user_access('administer recurly', $account);
+  return user_access('administer recurly subscription plans', $account);
 }
 
 /**
@@ -169,16 +198,8 @@ function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_pla
   }
 
   $subscription_plan->save();
-  return t('This will become the form to save the plan along with custom field data. For now, the plan has been automatically saved.');
-}
-
-/**
- * Page callback to edit a subscription plan.
- *
- * TODO: Move to recurly_entity.admin.inc
- */
-function recurly_subscription_plan_edit($subscription_plan) {
-  return t("This will become the form for editing a subscription plan's local fields.");
+  drupal_set_message(t('The subscription plan was successfully imported. Local data can be edited here.'));
+  drupal_goto('admin/content/recurly_subscription_plans/manage/' . $subscription_plan->id);
 }
 
 /**
@@ -205,12 +226,9 @@ function recurly_entity_form_recurly_subscription_plans_form_alter(&$form, &$for
       );
     }
     else {
-      $uri = entity_uri('recurly_subscription_plan', $plan_entity);
-      $path = $uri['path'];
-
       $details['operations']['#links']['edit_entity'] = array(
         'title' => t('edit subscription fields'),
-        'href' => $path,
+        'href' => 'admin/content/recurly_subscription_plans/manage/' . $plan_entity->id,
       );
     }
   }
