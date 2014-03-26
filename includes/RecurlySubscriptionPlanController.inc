@@ -141,13 +141,30 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The entity ID of the subscription plan, if it exists.
    */
   public function entityId($plan_code) {
-    // TODO: Check our static cache first.
+    $result = $this->entityIdMultiple(array($plan_code));
+    return reset($result);
+  }
+
+  /**
+   * Map multiple Recurly plan codes to their entity ID.
+   *
+   * @param array $plan_codes
+   *   An array of Recurly subscription plan codes.
+   *
+   * @return array
+   *   An array of entity IDs, keyed by their plan code.
+   */
+  public function entityIdMultiple(array $plan_codes) {
+    // We don't bother with the static cache here as we only key that by entity
+    // ID, and not by plan code. If needed we can add a second static cache by
+    // plan code later.
+
     // TODO: Throw an exception of there is no entity ID.
     return db_select('recurly_subscription_plan', 's')
-      ->fields('s', array('id'))
-      ->condition('s.plan_code', $plan_code)
+      ->fields('s', array('plan_code', 'id'))
+      ->condition('s.plan_code', $plan_codes, 'IN')
       ->execute()
-      ->fetchField();
+      ->fetchAllKeyed();
   }
 
   /**
