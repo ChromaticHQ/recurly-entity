@@ -25,7 +25,8 @@ function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_pla
   $local_plan = entity_get_controller('recurly_subscription_plan')->loadByPlanCode($subscription_plan->plan_code);
   if ($local_plan) {
     drupal_set_message(t('This subscription plan has already been added. Edit the existing plan or import a different plan.'));
-    drupal_goto('recurly/subscription-plan/' . $local_plan->id);
+    $paths = $local_plan->uri();
+    drupal_goto($paths['path']);
   }
 
   $subscription_plan->save();
