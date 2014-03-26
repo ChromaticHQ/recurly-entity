@@ -20,6 +20,7 @@ function recurly_entity_menu() {
     'page arguments' => array(3),
     'access arguments' => array('administer recurly'),
     'type' => MENU_CALLBACK,
+    'file' => 'recurly_entity.admin.inc',
   );
 
   return $items;
@@ -170,36 +171,6 @@ function recurly_subscription_plan_code_load($plan_code) {
 function recurly_subscription_plan_view(RecurlySubscriptionPlan $subscription_plan) {
   drupal_set_title($subscription_plan->label());
   return entity_view('recurly_subscription_plan', array($subscription_plan));
-}
-
-/**
- * Page callback to add a new Subscription Plan.
- *
- * This is split out from editing an existing plan as new subscription plans
- * must exist in Recurly first. In order to load this form, we must be passed in
- * that remote subscription plan so we can pull it's ID and other properties.
- *
- * TODO: Move this to recurly_entity.admin.inc.
- *
- * @param RecurlySubscriptionPlan $subscription_plan
- *   The subscription plan object loaded from Recurly and ready to present for
- *   saving.
- *
- * @return string
- *   The HTML of the form to import the subscription plan.
- */
-function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_plan) {
-  // This is a bit raw but only happens if someone manually browses to the /add
-  // URL.
-  $local_plan = entity_get_controller('recurly_subscription_plan')->loadByPlanCode($subscription_plan->plan_code);
-  if (isset($local_plan)) {
-    drupal_set_message(t('This subscription plan has already been added. Edit the existing plan or import a different plan.'));
-    drupal_goto('recurly/subscription-plan/' . $local_plan->id);
-  }
-
-  $subscription_plan->save();
-  drupal_set_message(t('The subscription plan was successfully imported. Local data can be edited here.'));
-  drupal_goto('admin/content/recurly_subscription_plans/manage/' . $subscription_plan->id);
 }
 
 /**
