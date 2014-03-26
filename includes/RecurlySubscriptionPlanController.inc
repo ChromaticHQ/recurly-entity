@@ -182,7 +182,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
   }
 
   /**
-   * Map multiple plan codes to their local entity ID.
+   * Map multiple entity IDs to their Recurly plan codes.
    *
    * @param array $entity_ids
    *   The array of entity IDs to map.
