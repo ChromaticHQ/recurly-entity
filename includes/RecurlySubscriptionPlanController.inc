@@ -135,7 +135,6 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
   public function loadByPlanCodeMultiple(array $plan_codes) {
     $entity_ids = $this->entityIdMultiple($plan_codes);
     return $this->load($entity_ids);
-    // TODO: Throw an exception if the plan code doesn't exist.
   }
 
   /**
@@ -166,7 +165,6 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
     // ID, and not by plan code. If needed we can add a second static cache by
     // plan code later.
 
-    // TODO: Throw an exception of there is no entity ID.
     return db_select('recurly_subscription_plan', 's')
       ->fields('s', array('plan_code', 'id'))
       ->condition('s.plan_code', $plan_codes, 'IN')
@@ -213,7 +211,6 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
     // Now, for any IDs that aren't in our static, cache, make a database call.
     $missed_ids = array_diff($entity_ids, array_keys($plans));
 
-    // TODO: Throw an exception if $entity_id doesn't exist.
     if (!empty($missed_ids)) {
       $plan_codes += db_select('recurly_subscription_plan', 's')
         ->fields('s', array('id', 'plan_code'))
