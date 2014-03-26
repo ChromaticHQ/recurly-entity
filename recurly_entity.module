@@ -187,8 +187,6 @@ function recurly_entity_form_recurly_subscription_plans_form_alter(&$form, &$for
     }
 
     // Add links to import or edit a local plan entity.
-    // TODO: This won't totally work as expected until we fully unifiy our
-    // loading code and implement isNew().
     $plan_entity = entity_get_controller('recurly_subscription_plan')->loadByPlanCode($plan_code);
     if (!$plan_entity || !isset($plan_entity->id)) {
       $details['operations']['#links']['import'] = array(
