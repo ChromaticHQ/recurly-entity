@@ -174,12 +174,30 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   An array of recurly plan codes.
    */
   public function recurlyCodeMultiple(array $entity_ids) {
-    // TODO: Check our static cache first.
+    $plan_codes = array();
+
+    // First, check our static entity cache for any plans that have been loaded.
+    $plans = $this->cacheGet($entity_ids);
+
+    // We don't use array_map() and a closure because array_map() copies the
+    // array as of PHP 5.3. php--
+    // http://willem.stuursma.name/2010/11/22/a-detailed-look-into-array_map-and-foreach/
+    foreach ($plans as $id => $plan) {
+      $plan_codes[$id] = $plan->plan_code;
+    }
+
+    // Now, for any IDs that aren't in our static, cache, make a database call.
+    $missed_ids = array_diff($entity_ids, array_keys($plans));
+
     // TODO: Throw an exception if $entity_id doesn't exist.
-    return db_select('recurly_subscription_plan', 's')
-      ->fields('s', array('id', 'plan_code'))
-      ->condition('s.id', $entity_ids, 'IN')
-      ->execute()
-      ->fetchAllKeyed();
+    if (!empty($missed_ids)) {
+      $plan_codes += db_select('recurly_subscription_plan', 's')
+        ->fields('s', array('id', 'plan_code'))
+        ->condition('s.id', $missed_ids, 'IN')
+        ->execute()
+        ->fetchAllKeyed();
+    }
+
+    return $plan_codes;
   }
 }
