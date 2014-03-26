@@ -116,7 +116,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The unique Recurly plan code.
    *
    * @return RecurlySubscriptionPlan
-   *   The loaded recurly subscription plan.
+   *   The loaded recurly subscription plan, or FALSE if one is not found.
    */
   public function loadByPlanCode($plan_code) {
     $entities = $this->loadByPlanCodeMultiple(array($plan_code));
@@ -135,7 +135,6 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
   public function loadByPlanCodeMultiple(array $plan_codes) {
     $entity_ids = $this->entityIdMultiple($plan_codes);
     return $this->load($entity_ids);
-    // TODO: Do a remote load if we can't map to a local ID?
     // TODO: Throw an exception if the plan code doesn't exist.
   }
 
@@ -146,7 +145,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The unique Recurly plan code.
    *
    * @return int
-   *   The entity ID of the subscription plan, if it exists.
+   *   The entity ID of the subscription plan, or FALSE if one is not found.
    */
   public function entityId($plan_code) {
     $result = $this->entityIdMultiple(array($plan_code));
@@ -182,7 +181,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The entity ID of the subscription plan.
    *
    * @return string
-   *   The unique Recurly plan code.
+   *   The unique Recurly plan code, or FALSE if one is not found.
    */
   public function recurlyCode($entity_id) {
     $result = $this->recurlyCodeMultiple(array($entity_id));
