@@ -17,8 +17,7 @@ function recurly_entity_schema() {
       'plan_code' => array(
         'description' => 'The code of the subscription plan.',
         'type' => 'varchar',
-        // TODO: Find the length.
-        'length' => 32,
+        'length' => 50,
         'not null' => TRUE,
         'default' => '',
       ),
