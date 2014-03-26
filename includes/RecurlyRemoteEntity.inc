@@ -9,6 +9,15 @@ interface RecurlyRemoteEntity {
   /**
    * Load an entity from Recurly using it's unique identifier.
    *
+   * @param array $ids
+   *   An array of Recurly IDs to load, such as the plan_code for a Subscription
+   *   Plan or the account_code for an Account.
+   */
+  public function loadFromRecurlyMultiple(array $ids);
+
+  /**
+   * Load an entity from Recurly using it's unique identifier.
+   *
    * @param $id
    *   The ID of the entity to load, such as the plan_code for a Subscription
    *   Plan or the account_code for an Account.
@@ -37,5 +46,14 @@ interface RecurlyRemoteEntity {
    */
   public function recurlyCode($entity_id);
 
+  /**
+   * Map an array of Entity IDs to Recurly codes.
+   *
+   * @param array $entity_ids
+   *   The array of entity IDs to map.
+   *
+   * @return array
+   *   An array of recurly codes.
+   */
+  public function recurlyCodeMultiple(array $entity_ids);
 }
-

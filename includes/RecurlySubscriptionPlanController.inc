@@ -32,10 +32,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
       }
     }
     if (!($this->cacheComplete && $ids === FALSE && !$conditions) && ($ids === FALSE || $ids)) {
-      // TODO: This should be one call, not many.
-      foreach ($ids as $id) {
-        $entities[] = $this->loadFromRecurly($this->recurlyCode($id));
-      }
+      $entities = $this->loadFromRecurlyMultiple($this->recurlyCodeMultiple($ids));
     }
 
     // This isn't as bad for performance as it seems as we statically cache
@@ -53,6 +50,24 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
     if (!empty($this->entityInfo['entity cache']) && !empty($entities)) {
       EntityCacheControllerHelper::entityCacheSet($this, $entities);
     }
+  }
+
+  /**
+   * Helper to load multiple subscription plans at once.
+   *
+   * @param array $plan_codes
+   *   An array of Recurly Subscription plan codes.
+   *
+   * @return array
+   *   An array of RecurlySubscriptionPlan entities.
+   */
+  public function loadFromRecurlyMultiple(array $plan_codes) {
+    $entities = array();
+    foreach ($plan_codes as $plan_code) {
+      $entities[] = $this->loadFromRecurly($plan_code);
+    }
+
+    return $entities;
   }
 
   /**
@@ -145,13 +160,26 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The unique Recurly plan code.
    */
   public function recurlyCode($entity_id) {
+    $result = $this->recurlyCodeMultiple(array($entity_id));
+    return reset($result);
+  }
+
+  /**
+   * Map multiple plan codes to their local entity ID.
+   *
+   * @param array $entity_ids
+   *   The array of entity IDs to map.
+   *
+   * @return array
+   *   An array of recurly plan codes.
+   */
+  public function recurlyCodeMultiple(array $entity_ids) {
     // TODO: Check our static cache first.
     // TODO: Throw an exception if $entity_id doesn't exist.
     return db_select('recurly_subscription_plan', 's')
-      ->fields('s', array('plan_code'))
-      ->condition('s.id', $entity_id)
+      ->fields('s', array('id', 'plan_code'))
+      ->condition('s.id', $entity_ids, 'IN')
       ->execute()
-      ->fetchField();
+      ->fetchAllKeyed();
   }
 }
-
