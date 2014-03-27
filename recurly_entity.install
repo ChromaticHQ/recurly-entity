@@ -21,6 +21,13 @@ function recurly_entity_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'name' => array(
+        'description' => 'The readable name of the subscription plan.',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => '',
+      ),
     ),
     'unique keys' => array(
       'plan_code' => array('plan_code'),
@@ -34,3 +41,16 @@ function recurly_entity_schema() {
   return $schema;
 }
 
+/**
+ * Add the name column to the recurly_subscription_plan table.
+ */
+function recurly_entity_update_7100() {
+  $spec = array(
+    'description' => 'The readable name of the subscription plan.',
+    'type' => 'varchar',
+    'length' => 50,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  db_add_field('recurly_subscription_plan', 'name', $spec);
+}
