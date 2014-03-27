@@ -12,4 +12,3 @@ files[] = includes/RecurlySubscriptionPlanController.inc
 files[] = includes/RecurlySubscriptionPlanUIController.inc
 files[] = includes/RecurlySubscriptionPlan.inc
 files[] = includes/RecurlySubscriptionPlanMetadataController.inc
-

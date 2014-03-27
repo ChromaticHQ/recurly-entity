@@ -32,10 +32,7 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
       }
     }
     if (!($this->cacheComplete && $ids === FALSE && !$conditions) && ($ids === FALSE || $ids)) {
-      // TODO: This should be one call, not many.
-      foreach ($ids as $id) {
-        $entities[] = $this->loadFromRecurly($this->recurlyCode($id));
-      }
+      $entities = $this->loadFromRecurlyMultiple($this->recurlyCodeMultiple($ids));
     }
 
     // This isn't as bad for performance as it seems as we statically cache
@@ -53,6 +50,24 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
     if (!empty($this->entityInfo['entity cache']) && !empty($entities)) {
       EntityCacheControllerHelper::entityCacheSet($this, $entities);
     }
+  }
+
+  /**
+   * Helper to load multiple subscription plans at once.
+   *
+   * @param array $plan_codes
+   *   An array of Recurly Subscription plan codes.
+   *
+   * @return array
+   *   An array of RecurlySubscriptionPlan entities.
+   */
+  public function loadFromRecurlyMultiple(array $plan_codes) {
+    $entities = array();
+    foreach ($plan_codes as $plan_code) {
+      $entities[] = $this->loadFromRecurly($plan_code);
+    }
+
+    return $entities;
   }
 
   /**
@@ -101,19 +116,25 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The unique Recurly plan code.
    *
    * @return RecurlySubscriptionPlan
-   *   The loaded recurly subscription plan.
-   *
-   * TODO: Make this a single load function that wraps around a multiple load
-   * function.
+   *   The loaded recurly subscription plan, or FALSE if one is not found.
    */
   public function loadByPlanCode($plan_code) {
-    if ($id = $this->entityId($plan_code)) {
-      $entities = $this->load(array($id));
-      return reset($entities);
-    }
+    $entities = $this->loadByPlanCodeMultiple(array($plan_code));
+    return reset($entities);
+  }
 
-    // TODO: Do a remote load if we can't map to a local ID?
-    // TODO: Throw an exception if the plan code doesn't exist.
+  /**
+   * Load a Recurly Subscription Plans by plan codes.
+   *
+   * @param array $plan_codees
+   *   An array of unique Recurly plan codes.
+   *
+   * @return array
+   *   An array of loaded recurly subscription plans.
+   */
+  public function loadByPlanCodeMultiple(array $plan_codes) {
+    $entity_ids = $this->entityIdMultiple($plan_codes);
+    return $this->load($entity_ids);
   }
 
   /**
@@ -123,16 +144,32 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The unique Recurly plan code.
    *
    * @return int
-   *   The entity ID of the subscription plan, if it exists.
+   *   The entity ID of the subscription plan, or FALSE if one is not found.
    */
   public function entityId($plan_code) {
-    // TODO: Check our static cache first.
-    // TODO: Throw an exception of there is no entity ID.
+    $result = $this->entityIdMultiple(array($plan_code));
+    return reset($result);
+  }
+
+  /**
+   * Map multiple Recurly plan codes to their entity ID.
+   *
+   * @param array $plan_codes
+   *   An array of Recurly subscription plan codes.
+   *
+   * @return array
+   *   An array of entity IDs, keyed by their plan code.
+   */
+  public function entityIdMultiple(array $plan_codes) {
+    // We don't bother with the static cache here as we only key that by entity
+    // ID, and not by plan code. If needed we can add a second static cache by
+    // plan code later.
+
     return db_select('recurly_subscription_plan', 's')
-      ->fields('s', array('id'))
-      ->condition('s.plan_code', $plan_code)
+      ->fields('s', array('plan_code', 'id'))
+      ->condition('s.plan_code', $plan_codes, 'IN')
       ->execute()
-      ->fetchField();
+      ->fetchAllKeyed();
   }
 
   /**
@@ -142,16 +179,46 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
    *   The entity ID of the subscription plan.
    *
    * @return string
-   *   The unique Recurly plan code.
+   *   The unique Recurly plan code, or FALSE if one is not found.
    */
   public function recurlyCode($entity_id) {
-    // TODO: Check our static cache first.
-    // TODO: Throw an exception if $entity_id doesn't exist.
-    return db_select('recurly_subscription_plan', 's')
-      ->fields('s', array('plan_code'))
-      ->condition('s.id', $entity_id)
-      ->execute()
-      ->fetchField();
+    $result = $this->recurlyCodeMultiple(array($entity_id));
+    return reset($result);
+  }
+
+  /**
+   * Map multiple entity IDs to their Recurly plan codes.
+   *
+   * @param array $entity_ids
+   *   The array of entity IDs to map.
+   *
+   * @return array
+   *   An array of recurly plan codes.
+   */
+  public function recurlyCodeMultiple(array $entity_ids) {
+    $plan_codes = array();
+
+    // First, check our static entity cache for any plans that have been loaded.
+    $plans = $this->cacheGet($entity_ids);
+
+    // We don't use array_map() and a closure because array_map() copies the
+    // array as of PHP 5.3. php--
+    // http://willem.stuursma.name/2010/11/22/a-detailed-look-into-array_map-and-foreach/
+    foreach ($plans as $id => $plan) {
+      $plan_codes[$id] = $plan->plan_code;
+    }
+
+    // Now, for any IDs that aren't in our static, cache, make a database call.
+    $missed_ids = array_diff($entity_ids, array_keys($plans));
+
+    if (!empty($missed_ids)) {
+      $plan_codes += db_select('recurly_subscription_plan', 's')
+        ->fields('s', array('id', 'plan_code'))
+        ->condition('s.id', $missed_ids, 'IN')
+        ->execute()
+        ->fetchAllKeyed();
+    }
+
+    return $plan_codes;
   }
 }
-
