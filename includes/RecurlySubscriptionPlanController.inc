@@ -32,6 +32,8 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
       }
     }
     if (!($this->cacheComplete && $ids === FALSE && !$conditions) && ($ids === FALSE || $ids)) {
+      // Note that we attach fields in loadFromRecurly, right before we store
+      // the plan in the entity cache.
       $entities = $this->loadFromRecurlyMultiple($this->recurlyCodeMultiple($ids));
     }
 
@@ -103,6 +105,9 @@ class RecurlySubscriptionPlanController extends EntityAPIController implements R
     // Update our local entity cache, but only if we have saved this plan
     // locally.
     if (isset($plan_entity->id)) {
+      // Attach our fields.
+      $wrapper = array($plan_entity->id => $plan_entity);
+      $this->attachLoad($wrapper);
       $this->entityCacheSet(array($plan_entity));
     }
 
