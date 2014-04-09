@@ -74,6 +74,13 @@ function recurly_entity_entity_info() {
 }
 
 /**
+ * Implements hook_flush_caches().
+ */
+function recurly_entity_flush_caches() {
+  return array('cache_entity_recurly_subscription_plan');
+}
+
+/**
  * Implements hook_permission().
  */
 function recurly_entity_permission() {
