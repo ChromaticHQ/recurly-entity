@@ -51,6 +51,7 @@ function recurly_entity_entity_info() {
       'entity keys' => array(
         'id' => 'id',
         'label' => 'name', // TODO
+        'uuid' => 'uuid',
       ),
       // Use the default label() and uri() functions
       'label callback' => 'entity_class_label',
