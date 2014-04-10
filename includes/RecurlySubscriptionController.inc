@@ -65,126 +65,87 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
     return $subscription_entity;
   }
 
-  // TODO: Plan codes, replace with uuid wrappers, nothing?
   /**
-   * Load a Recurly Subscription Plan by it's plan code.
+   * Load a Recurly Subscription by it's UUID.
    *
-   * @param string $plan_code
-   *   The unique Recurly plan code.
+   * @param string $uuid
+   *   The UUID of the subscription.
    *
-   * @return RecurlySubscriptionPlan
-   *   The loaded recurly subscription plan, or FALSE if one is not found.
+   * @return RecurlySubscription
+   *   The loaded Recurly subscription, or FALSE if one is not found.
    */
-  public function loadByPlanCode($plan_code) {
-    $entities = $this->loadByPlanCodeMultiple(array($plan_code));
+  public function loadByUuid($uuid) {
+    $entities = $this->loadByUuidCodeMultiple(array($uuid));
     return reset($entities);
   }
 
   /**
-   * Load a Recurly Subscription Plans by plan codes.
+   * Load a Recurly Subscriptions by UUIDs.
    *
-   * @param array $plan_codees
-   *   An array of unique Recurly plan codes.
+   * @param array $uuids
+   *   An array of Subscription UUIDs.
    *
    * @return array
-   *   An array of loaded recurly subscription plans.
+   *   An array of loaded recurly subscriptions.
    */
-  public function loadByPlanCodeMultiple(array $plan_codes) {
-    $entity_ids = $this->entityIdMultiple($plan_codes);
+  public function loadByUUIDMultiple(array $uuid) {
+    $entity_ids = $this->entityIdMultiple($uuid);
     return $this->load($entity_ids);
   }
-  // END TODO
 
   /**
-   * Map a Recurly Subscription Plan code to it's entity ID.
+   * Map a Recurly Subscription UUID to it's entity ID.
    *
-   * @param string $plan_code
-   *   The unique Recurly plan code.
+   * @param string $uuid
+   *   The UUID of the subscription.
    *
    * @return int
-   *   The entity ID of the subscription plan, or FALSE if one is not found.
+   *   The entity ID of the subscription, or FALSE if one is not found.
    */
-  public function entityId($plan_code) {
-    // TODO
-    return FALSE;
-    $result = $this->entityIdMultiple(array($plan_code));
+  public function entityId($uuid) {
+    $result = $this->entityIdMultiple(array($uuid));
     return reset($result);
   }
 
   /**
-   * Map multiple Recurly plan codes to their entity ID.
+   * Map multiple Recurly subscription UUIDs to their entity ID.
    *
-   * @param array $plan_codes
-   *   An array of Recurly subscription plan codes.
+   * @param array $uuids
+   *   An array of Recurly subscription UUIDs.
    *
    * @return array
-   *   An array of entity IDs, keyed by their plan code.
+   *   An array of entity IDs, keyed by their subscription UUID.
    */
-  public function entityIdMultiple(array $plan_codes) {
-    // We don't bother with the static cache here as we only key that by entity
-    // ID, and not by plan code. If needed we can add a second static cache by
-    // plan code later.
-    // TODO
-    return array();
-
-    return db_select('recurly_subscription_plan', 's')
-      ->fields('s', array('plan_code', 'id'))
-      ->condition('s.plan_code', $plan_codes, 'IN')
-      ->execute()
-      ->fetchAllKeyed();
+  public function entityIdMultiple(array $uuids) {
+    $ids = entity_get_id_by_uuid('recurly_subscription', $uuids);
+    // TODO: If a UUID isn't found, pull it down.
+    return $uuids;
   }
 
   /**
-   * Map an Entity ID to a Recurly plan code.
+   * Map an Entity ID to a Recurly UUID.
    *
    * @param int $entity_id
-   *   The entity ID of the subscription plan.
+   *   The entity ID of the subscription.
    *
    * @return string
-   *   The unique Recurly plan code, or FALSE if one is not found.
+   *   The unique Recurly UUID, or FALSE if one is not found.
    */
   public function recurlyCode($entity_id) {
-    // TODO
-    return FALSE;
     $result = $this->recurlyCodeMultiple(array($entity_id));
     return reset($result);
   }
 
   /**
-   * Map multiple entity IDs to their Recurly plan codes.
+   * Map multiple entity IDs to their Recurly UUID.
    *
    * @param array $entity_ids
    *   The array of entity IDs to map.
    *
    * @return array
-   *   An array of recurly plan codes.
+   *   An array of Recurly UUIDs.
    */
   public function recurlyCodeMultiple(array $entity_ids) {
-    // TODO
-    return array();
-    $plan_codes = array();
-
-    // First, check our static entity cache for any plans that have been loaded.
-    $plans = $this->cacheGet($entity_ids);
-
-    // We don't use array_map() and a closure because array_map() copies the
-    // array as of PHP 5.3. php--
-    // http://willem.stuursma.name/2010/11/22/a-detailed-look-into-array_map-and-foreach/
-    foreach ($plans as $id => $plan) {
-      $plan_codes[$id] = $plan->plan_code;
-    }
-
-    // Now, for any IDs that aren't in our static, cache, make a database call.
-    $missed_ids = array_diff($entity_ids, array_keys($plans));
-
-    if (!empty($missed_ids)) {
-      $plan_codes += db_select('recurly_subscription_plan', 's')
-        ->fields('s', array('id', 'plan_code'))
-        ->condition('s.id', $missed_ids, 'IN')
-        ->execute()
-        ->fetchAllKeyed();
-    }
-
-    return $plan_codes;
+    return entity_get_uuid_by_id('recurly_subscription', $entity_ids);
   }
 }

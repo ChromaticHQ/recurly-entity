@@ -2,6 +2,7 @@ name = Recurly Entities
 description = Exposes Recurly objects through Drupal's Entity API
 dependencies[] = entity
 dependencies[] = entitycache
+dependencies[] = uuid
 core = 7.x
 package = Recurly
 
