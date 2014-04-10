@@ -44,9 +44,7 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
 
     $values = array();
     foreach ($attributes as $attr) {
-      // We can probably remove this later, but for now it greatly simplifies
-      // testing.
-      if (isset($subscription->$attr) && is_scalar($subscription->$attr)) {
+      if (isset($subscription->$attr)) {
         $values[$attr] = $subscription->$attr;
       }
     }
