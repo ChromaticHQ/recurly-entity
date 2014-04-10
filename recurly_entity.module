@@ -47,7 +47,7 @@ function recurly_entity_entity_info() {
       // Use the default label() and uri() functions
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
-      'access callback' => 'recurly_entity_subscription_access',
+      'access callback' => 'recurly_entity_subscription_plan_access',
       'fieldable' => TRUE,
       'bundles' => array(
         'recurly_subscription_plan' => array(
@@ -113,7 +113,7 @@ function recurly_entity_help($path, $arg) {
 /**
  * Access callback for Subscription Plans.
  */
-function recurly_entity_subscription_access($op, $subscription_plan = NULL, $account = NULL) {
+function recurly_entity_subscription_plan_access($op, $subscription_plan = NULL, $account = NULL) {
   return user_access('administer recurly subscription plans', $account);
 }
 
