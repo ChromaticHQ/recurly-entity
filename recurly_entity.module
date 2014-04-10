@@ -77,7 +77,10 @@ function recurly_entity_entity_info() {
  * Implements hook_flush_caches().
  */
 function recurly_entity_flush_caches() {
-  return array('cache_entity_recurly_subscription_plan');
+  return array(
+    'cache_entity_recurly_subscription',
+    'cache_entity_recurly_subscription_plan',
+  );
 }
 
 /**
