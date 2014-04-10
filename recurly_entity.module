@@ -5,6 +5,14 @@
  */
 function recurly_entity_menu() {
   $items = array();
+  $items['recurly/subscription/%recurly_subscription'] = array(
+    'page callback' => 'recurly_subscription_view',
+    'page arguments' => array(2),
+    'access callback' => 'recurly_subscription_access',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
   $items['recurly/subscription-plan/%recurly_subscription_plan'] = array(
     'page callback' => 'recurly_subscription_plan_view',
     'page arguments' => array(2),
@@ -31,6 +39,35 @@ function recurly_entity_menu() {
  */
 function recurly_entity_entity_info() {
   return array(
+    'recurly_subscription' => array(
+      'label' => t('Subscription'),
+      'plural label' => t('Subscriptions'),
+      'entity class' => 'RecurlySubscription',
+      'controller class' => 'RecurlySubscriptionController',
+      'metadata controller class' => 'RecurlySubscriptionMetadataController',
+      'extra fields controller class' => 'EntityDefaultExtraFieldsController',
+      'base table' => 'recurly_subscription',
+      'entity cache' => TRUE,
+      'entity keys' => array(
+        'id' => 'id',
+        'label' => 'name', // TODO
+      ),
+      // Use the default label() and uri() functions
+      'label callback' => 'entity_class_label',
+      'uri callback' => 'entity_class_uri',
+      'fieldable' => TRUE,
+      'bundles' => array(
+        'recurly_subscription' => array(
+          'label' => t('Subscription'),
+        ),
+      ),
+      'module' => 'recurly_entity',
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full subscription'),
+        ),
+      ),
+    ),
     'recurly_subscription_plan' => array(
       'label' => t('Subscription Plan'),
       'plural label' => t('Subscription Plans'),
@@ -145,6 +182,19 @@ function recurly_entity_theme() {
 }
 
 /**
+ * Load a single subscription entity.
+ *
+ * @param int $id
+ *   The entity id of the subscription.
+ *
+ * @return RecurlySubscription
+ *   The RecurlySubscription entity.
+ */
+function recurly_subscription_load($id) {
+  return entity_load_single('recurly_subscription', $id);
+}
+
+/**
  * Load a single subscription plan entity.
  *
  * @param int $id
@@ -212,4 +262,3 @@ function recurly_entity_form_recurly_subscription_plans_form_alter(&$form, &$for
     }
   }
 }
-
