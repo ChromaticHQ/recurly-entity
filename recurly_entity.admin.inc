@@ -43,6 +43,11 @@ function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_pla
 function recurly_subscription_plan_form($form, &$form_state, $subscription_plan) {
   $form = array();
 
+  $form['subscription_plan_view'] = array(
+    '#weight' => -10,
+    'plan' => $subscription_plan->view('recurly_data'),
+  );
+
   $form_state['recurly_subscription_plan'] = $subscription_plan;
   $form_state['entity_type'] = 'recurly_subscription_plan';
   field_attach_form('recurly_subscription_plan', $subscription_plan, $form, $form_state);
