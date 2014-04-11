@@ -63,7 +63,7 @@ function recurly_entity_entity_info() {
       'entity cache' => TRUE,
       'entity keys' => array(
         'id' => 'id',
-        'label' => 'name', // TODO
+        'label' => 'title',
         'uuid' => 'uuid',
       ),
       // Use the default label() and uri() functions

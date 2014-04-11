@@ -15,6 +15,13 @@ function recurly_entity_schema() {
         'not null' => TRUE,
         'description' => 'Primary Key: Unique subscription item ID.',
       ),
+      'title' => array(
+        'description' => 'The generated title of this subscription, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
       'entity_type' => array(
         'type' => 'varchar',
         'length' => 255,
@@ -109,6 +116,13 @@ function recurly_entity_update_7101() {
         'type' => 'serial',
         'not null' => TRUE,
         'description' => 'Primary Key: Unique subscription item ID.',
+      ),
+      'title' => array(
+        'description' => 'The generated title of this subscription, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
       ),
       'entity_type' => array(
         'type' => 'varchar',

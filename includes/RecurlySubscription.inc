@@ -22,6 +22,15 @@ class RecurlySubscription extends RecurlyEntity {
       $values['plan_code'] = $values['plan']->plan_code;
     }
 
+    // Generate a title for this subscription.
+    if (!isset($values['title'])) {
+      $subscription_starts = $values['current_period_started_at']->format('Y-m-d');
+      $subscription_ends = $values['current_period_ends_at']->format('Y-m-d');
+
+      // We explicitly don't want to translate these user-supplied fields.
+      $values['title'] = format_string('!name (!start to !end)', array('!name' => $values['plan']->name, '!start' => $subscription_starts, '!end' => $subscription_ends));
+    }
+
     // Map the Recurly account from the subscription to a local owner ID. Most
     // of the time this will be a user id, but the Recurly module allows
     // accounts to be mapped to any entity type.

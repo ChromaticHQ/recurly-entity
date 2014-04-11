@@ -47,13 +47,16 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
 
     // Recurly_Subscription::$_writeableAttributes is protected :(
     // We add uuid here as that appears to be missing in the upstream library.
-    // 'plan' is also missing.
+    // Actually, anything below 'uuid' is missing from upstream as well. We only
+    // are adding properties as they're needed, so this is incomplete.
     $attributes = array(
       'account','plan_code','coupon_code','unit_amount_in_cents','quantity',
       'currency','starts_at','trial_ends_at','total_billing_cycles', 'first_renewal_date',
       'timeframe', 'subscription_add_ons', 'net_terms', 'po_number', 'collection_method',
       'uuid',
       'plan',
+      'current_period_started_at',
+      'current_period_ends_at',
     );
     // TODO: Recurly_Subscription::$_nestedAttributes = array('account', 'subscription_add_ons');
 
