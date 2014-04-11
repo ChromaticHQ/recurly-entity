@@ -58,7 +58,6 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
       'current_period_started_at',
       'current_period_ends_at',
     );
-    // TODO: Recurly_Subscription::$_nestedAttributes = array('account', 'subscription_add_ons');
 
     $values = array();
     foreach ($attributes as $attr) {
