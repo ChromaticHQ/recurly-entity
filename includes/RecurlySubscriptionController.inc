@@ -119,7 +119,7 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
   public function entityIdMultiple(array $uuids) {
     $ids = entity_get_id_by_uuid('recurly_subscription', $uuids);
     // TODO: If a UUID isn't found, pull it down.
-    return $uuids;
+    return $ids;
   }
 
   /**
