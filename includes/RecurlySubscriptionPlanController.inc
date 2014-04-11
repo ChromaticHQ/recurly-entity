@@ -8,6 +8,23 @@
 class RecurlySubscriptionPlanController extends RecurlyAPIController implements RecurlyRemoteEntity {
 
   /**
+   * Overrides EntityAPIController#buildContent().
+   */
+  public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
+    // Add our theme functions to the build array.
+    $build = parent::buildContent($entity, $view_mode, $langcode, $content);
+    $build += array(
+      '#theme' => 'recurly_subscription_plan_' . $view_mode,
+    );
+
+    if ($view_mode == 'recurly_data') {
+      $build = $this->buildRecurlyData($build);
+    }
+
+    return $build;
+  }
+
+  /**
    * Helper to load multiple subscription plans at once.
    *
    * @param array $plan_codes
@@ -178,5 +195,30 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
     }
 
     return $plan_codes;
+  }
+
+  /**
+   * Create a build array for the recurly_data view mode.
+   *
+   * Rather than manually add in our items, we build the full object and then
+   * remove any data which isn't described as an entity property.
+   *
+   * @param array $build
+   *   The build array as returned by buildContent().
+   *
+   * @return array
+   *   A build array.
+   */
+  public static function buildRecurlyData($build) {
+    $metadata_controller = new RecurlySubscriptionPlanMetadataController('recurly_subscription_plan');
+    $info = $metadata_controller->entityPropertyInfo();
+    $property_names = array_keys($info['recurly_subscription_plan']['properties']);
+    foreach (element_children($build) as $key) {
+      if (!in_array($key, $property_names)) {
+        unset($build[$key]);
+      }
+    }
+
+    return $build;
   }
 }
