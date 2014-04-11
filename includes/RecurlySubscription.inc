@@ -17,6 +17,11 @@ class RecurlySubscription extends RecurlyEntity {
       }
     }
 
+    // Extract the plan code from this subscription.
+    if (!isset($values['plan_code'])) {
+      $values['plan_code'] = $values['plan']->plan_code;
+    }
+
     // Map the Recurly account from the subscription to a local owner ID. Most
     // of the time this will be a user id, but the Recurly module allows
     // accounts to be mapped to any entity type.
