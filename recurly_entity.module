@@ -31,14 +31,6 @@ function recurly_entity_menu() {
     'file' => 'recurly_entity.admin.inc',
   );
 
-  $items['admin/config/services/recurly/subscriptions'] = array(
-    'title' => 'Subscriptions',
-    'description' => 'Configure fields for Recurly subscriptions.',
-    'access arguments' => array('administer recurly'),
-    'type' => MENU_LOCAL_TASK,
-    'weight' => -5,
-  );
-
   return $items;
 }
 
@@ -46,7 +38,13 @@ function recurly_entity_menu() {
  * Implements hook_menu_alter().
  */
 function recurly_entity_menu_alter(&$items) {
-  $items['admin/config/services/recurly/subscriptions/fields']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  // We don't have a summary page, so pop out the manage fields listing to be
+  // the default task.
+  if (isset($items['admin/config/services/recurly/subscriptions/fields'])) {
+    $items['admin/config/services/recurly/subscriptions'] = $items['admin/config/services/recurly/subscriptions/fields'];
+    $items['admin/config/services/recurly/subscriptions']['title'] = 'Subscriptions';
+    $items['admin/config/services/recurly/subscriptions/fields']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  }
 }
 
 /**
