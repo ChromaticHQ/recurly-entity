@@ -8,6 +8,17 @@
 class RecurlySubscriptionController extends RecurlyAPIController implements RecurlyRemoteEntity {
 
   /**
+   * Override save() to check for a valid local subscription owner.
+   */
+  public function save($subscription, DatabaseTransaction $transaction = NULL) {
+    if (!isset($subscription->entity_type) || !isset($subscription->entity_id)) {
+      throw new RecurlySubscriptionMissingOwnerException('Subscriptions must have an associated owner entity to be saved.');
+    }
+
+    parent::save($subscription, $transaction);
+  }
+
+  /**
    * Helper to load multiple subscriptions at once.
    *
    * @param array $uuids
@@ -149,3 +160,6 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
     return entity_get_uuid_by_id('recurly_subscription', $entity_ids);
   }
 }
+
+// Generic exception for when a subscription has no valid owner.
+class RecurlySubscriptionMissingOwnerException extends Exception {}
