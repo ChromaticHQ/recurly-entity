@@ -15,16 +15,23 @@ function recurly_entity_schema() {
         'not null' => TRUE,
         'description' => 'Primary Key: Unique subscription item ID.',
       ),
-      'uid' => array(
+      'entity_type' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The entity type of the entity (typically user) associated with this subscription.',
+      ),
+      'entity_id' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => 'The user ID of the user associated with this subscription.',
+        'description' => 'The entity ID of the entity (typically user) associated with this subscription.',
       ),
       'uuid' => $uuid_spec,
     ),
     'primary key' => array('id'),
     'indexes' => array(
-      'user' => array('uid'),
+      'entity_type' => array('entity_type'),
+      'entity_id' => array('entity_id'),
       'uuid' => array('uuid'),
     ),
   );
@@ -96,16 +103,23 @@ function recurly_entity_update_7101() {
         'not null' => TRUE,
         'description' => 'Primary Key: Unique subscription item ID.',
       ),
-      'uid' => array(
+      'entity_type' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The entity type of the entity (typically user) associated with this subscription.',
+      ),
+      'entity_id' => array(
         'type' => 'int',
         'not null' => TRUE,
-        'description' => 'The user ID of the user associated with this subscription.',
+        'description' => 'The entity ID of the entity (typically user) associated with this subscription.',
       ),
       'uuid' => $uuid_spec,
     ),
     'primary key' => array('id'),
     'indexes' => array(
-      'user' => array('uid'),
+      'entity_type' => array('entity_type'),
+      'entity_id' => array('entity_id'),
       'uuid' => array('uuid'),
     ),
   );
