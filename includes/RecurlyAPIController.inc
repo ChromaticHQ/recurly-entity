@@ -21,6 +21,10 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
     $original_ids = $ids;
 
     if (!empty($this->entityInfo['entity cache']) && $ids && !$conditions) {
+      // We need to initalize the Recurly client so we can unserialize()
+      // Recurly objects stored in the cache.
+      recurly_client_initialize();
+
       $cached_entities = EntityCacheControllerHelper::entityCacheGet($this, $ids, $conditions);
       // If any entities were loaded, remove them from the ids still to load.
       $ids = array_diff($ids, array_keys($cached_entities));
