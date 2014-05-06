@@ -54,8 +54,11 @@ class RecurlySubscriptionPlan extends RecurlyEntity {
       case 'percent':
         // discount_percent is an integer.
         $amount *= (1 - $coupon->discount_percent / 100);
+        break;
+
       case 'dollars':
         $amount -= $coupon->discount_in_cents->getCurrency($currency)->amount();
+        break;
     }
 
     // Also ensure that we never give a negative discount.
