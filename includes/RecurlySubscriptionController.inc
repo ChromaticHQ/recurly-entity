@@ -173,6 +173,8 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
     // existing Recurly_Subscription object to be "loaded" from.
     $subscription_entity = $this->loadFromRecurly($recurly_subscription->uuid);
     $this->save($subscription_entity);
+
+    return $subscription_entity;
   }
 }
 
