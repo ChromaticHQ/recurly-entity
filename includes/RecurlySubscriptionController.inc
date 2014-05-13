@@ -144,7 +144,38 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
   public function recurlyCodeMultiple(array $entity_ids) {
     return entity_get_uuid_by_id('recurly_subscription', $entity_ids);
   }
+
+  /**
+   * Create a new Recurly subscription and return the saved subscription
+   * entity.
+   *
+   * To use this, create a Recurly_Subscription object like normal, but instead
+   * of calling create() on it directly pass it through to this method.
+   *
+   * @param Recurly_Subscription $recurly_subscription
+   *   The Recurly_Subscription to create.
+   *
+   * @throws RecurlySubscriptionNotActiveException
+   *
+   * @return RecurlySubscription
+   *   The RecurlySubscription entity that was created.
+   */
+  public function createRecurlySubscription(Recurly_Subscription $recurly_subscription) {
+    module_invoke_all('recurly_subscription_precreate', $recurly_subscription);
+    $recurly_subscription->create();
+    if ($recurly_subscription->state != 'active') {
+      throw new RecurlySubscriptionNotActiveException('The subscription was not activated and has not been successfully charged.');
+    }
+
+    // TODO: For simplicity we reload the subscription from Recurly, but this
+    // could be optimized by modifying the RecurlySubscriptionController to either
+    // save to the entity cache, or to refactor loadFromRecurly() to allow for an
+    // existing Recurly_Subscription object to be "loaded" from.
+    $subscription_entity = $this->loadFromRecurly($recurly_subscription->uuid);
+    $this->save($subscription_entity);
+  }
 }
 
 // Generic exception for when a subscription has no valid owner.
 class RecurlySubscriptionMissingOwnerException extends Exception {}
+class RecurlySubscriptionNotActiveException extends Exception {}
