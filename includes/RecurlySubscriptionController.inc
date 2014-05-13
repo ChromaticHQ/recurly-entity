@@ -39,7 +39,7 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
   /**
    * @{inheritdoc}
    *
-   * @return RecurlySubscriptionPlan
+   * @return RecurlySubscription
    */
   public function loadFromRecurly($uuid) {
     recurly_client_initialize();
