@@ -21,3 +21,16 @@ function hook_recurly_subscription_precreate(Recurly_Subscription $subscription)
     $subscription->coupon_code = $coupon->coupon_code;
   }
 }
+
+/**
+ * Modify a subscription after it is created in Recurly. This hook is only
+ * called when the
+ * RecurlySubscriptionController::createRecurlySubscription() method is called
+ * to create the subscription, as we can't directly hook into the Recurly PHP
+ * library.
+ *
+ * @param Recurly_Subscription $subscription
+ *   The subscription that has been created.
+ */
+function hook_recurly_subscription_create(Recurly_Subscription $subscription) {
+}

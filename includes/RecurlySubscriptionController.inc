@@ -163,6 +163,8 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
   public function createRecurlySubscription(Recurly_Subscription $recurly_subscription) {
     module_invoke_all('recurly_subscription_precreate', $recurly_subscription);
     $recurly_subscription->create();
+    module_invoke_all('recurly_subscription_create', $recurly_subscription);
+
     if ($recurly_subscription->state != 'active') {
       throw new RecurlySubscriptionNotActiveException('The subscription was not activated and has not been successfully charged.');
     }
