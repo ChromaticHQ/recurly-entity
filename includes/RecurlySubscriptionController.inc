@@ -178,6 +178,32 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
 
     return $subscription_entity;
   }
+
+  /**
+   * Load all subscriptions by the entity that owns the subscription.
+   *
+   * @param string $entity_type
+   *   The type of entity, typically 'user'.
+   * @param int $entity_id
+   *   The id of the owner.
+   *
+   * @return array
+   *   An array of subscriptions associated with this entity, or an empty array
+   *   if none were found.
+   */
+  public function loadByOwner($entity_type, $entity_id) {
+    $query = new EntityFieldQuery();
+    $results = $query->entityCondition('entity_type', 'recurly_subscription')
+      ->propertyCondition('entity_type', $entity_type)
+      ->propertyCondition('entity_id', $entity_id)
+      ->execute();
+
+    if (!empty($results['recurly_subscription'])) {
+      return $this->load(array_keys($results['recurly_subscription']));
+    }
+
+    return array();
+  }
 }
 
 // Generic exception for when a subscription has no valid owner.
