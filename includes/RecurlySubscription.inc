@@ -54,4 +54,15 @@ class RecurlySubscription extends RecurlyEntity {
       'path' => 'recurly/subscription/' . $this->id,
     );
   }
+
+  /**
+   * Return the subscription plan associated with this subscription.
+   *
+   * @return RecurlySubscription
+   *   The Recurly Subscription Plan entity associated with this subscription.
+   */
+  public function plan() {
+    return entity_get_controller('recurly_subscription_plan')
+      ->loadByPlanCode($this->plan_code);
+  }
 }
