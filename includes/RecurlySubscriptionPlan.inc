@@ -45,7 +45,7 @@ class RecurlySubscriptionPlan extends RecurlyEntity {
    *   be at least 0, even if the coupon is of a greater value.
    */
   public function amount($currency = 'USD', Recurly_Coupon $coupon = NULL) {
-    $amount = $this->unit_amount_in_cents->getCurrency($currency)->amount();
+    $amount = $this->unit_amount_in_cents->getCurrency($currency)->amount_in_cents;
     if (!$coupon) {
       return $amount;
     }
@@ -57,7 +57,7 @@ class RecurlySubscriptionPlan extends RecurlyEntity {
         break;
 
       case 'dollars':
-        $amount -= $coupon->discount_in_cents->getCurrency($currency)->amount();
+        $amount -= $coupon->discount_in_cents->getCurrency($currency)->amount_in_cents;
         break;
     }
 
