@@ -9,6 +9,7 @@ package = Recurly
 files[] = recurly_entity.admin.inc
 files[] = includes/RecurlyAPIController.inc
 files[] = includes/RecurlyAdjustment.inc
+files[] = includes/RecurlyAdjustmentController.inc
 files[] = includes/RecurlyEntity.inc
 files[] = includes/RecurlyRemoteEntity.inc
 files[] = includes/RecurlySubscription.inc
