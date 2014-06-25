@@ -16,7 +16,7 @@ class RecurlyAdjustmentController extends RecurlyAPIController {
     $adjustment = Recurly_Adjustment::get($uuid);
     $attributes = array(
       'currency','unit_amount_in_cents','quantity','description',
-      'accounting_code','invoice','account'
+      'accounting_code','invoice','account',
     );
 
     $values = array();
