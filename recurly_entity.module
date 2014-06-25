@@ -53,6 +53,11 @@ function recurly_entity_menu_alter(&$items) {
     $items['admin/config/services/recurly/subscriptions']['title'] = 'Subscriptions';
     $items['admin/config/services/recurly/subscriptions/fields']['type'] = MENU_DEFAULT_LOCAL_TASK;
   }
+  if (isset($items['admin/config/services/recurly/adjustments/fields'])) {
+    $items['admin/config/services/recurly/adjustments'] = $items['admin/config/services/recurly/adjustments/fields'];
+    $items['admin/config/services/recurly/adjustments']['title'] = 'Adjustments';
+    $items['admin/config/services/recurly/adjustments/fields']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  }
 }
 
 /**
@@ -159,7 +164,7 @@ function recurly_entity_entity_info() {
         'recurly_adjustment' => array(
           'label' => t('Adjustment'),
           'admin' => array(
-            'path' => 'admin/config/services/recurly/adjustment',
+            'path' => 'admin/config/services/recurly/adjustments',
             'access arguments' => array('administer recurly'),
           ),
         ),
