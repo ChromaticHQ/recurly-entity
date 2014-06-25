@@ -128,6 +128,37 @@ function recurly_entity_entity_info() {
         ),
       ),
     ),
+    'recurly_adjustment' => array(
+      'label' => t('Adjustment'),
+      'plural label' => t('Adjustments'),
+      'entity class' => 'RecurlyAdjustment',
+      'controller class' => 'RecurlyAdjustmentController',
+      'base table' => 'recurly_adjustment',
+      'entity cache' => TRUE,
+      'entity keys' => array(
+        'id' => 'id',
+        'label' => 'title',
+      ),
+      // Use the default label() and uri() functions.
+      'label callback' => 'entity_class_label',
+      'uri callback' => 'entity_class_uri',
+      'fieldable' => TRUE,
+      'bundles' => array(
+        'recurly_adjustment' => array(
+          'label' => t('Adjustment'),
+          'admin' => array(
+            'path' => 'admin/config/services/recurly/adjustment',
+            'access arguments' => array('administer recurly'),
+          ),
+        ),
+      ),
+      'module' => 'recurly_entity',
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full adjustment'),
+        ),
+      ),
+    ),
   );
 }
 
@@ -138,6 +169,7 @@ function recurly_entity_flush_caches() {
   return array(
     'cache_entity_recurly_subscription',
     'cache_entity_recurly_subscription_plan',
+    'cache_entity_recurly_adjustment',
   );
 }
 
@@ -256,6 +288,19 @@ function recurly_subscription_plan_load($id) {
  */
 function recurly_subscription_plan_code_load($plan_code) {
   return entity_get_controller('recurly_subscription_plan')->loadFromRecurly($plan_code);
+}
+
+/**
+ * Load a single adjustment entity.
+ *
+ * @param int $id
+ *   The entity id of the adjustment.
+ *
+ * @return RecurlyAdjustment
+ *   The RecurlyAdjustment entity.
+ */
+function recurly_adjustment_load($id) {
+  return entity_load_single('recurly_adjustment', $id);
 }
 
 /**
