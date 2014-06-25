@@ -74,4 +74,60 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
 
     return $entities;
   }
+
+  /**
+   * Map a Recurly entity UUID to it's entity ID.
+   *
+   * @param string $uuid
+   *   The UUID of the entity.
+   *
+   * @return int
+   *   The entity ID, or FALSE if one is not found.
+   */
+  public function entityId($uuid) {
+    $result = $this->entityIdMultiple(array($uuid));
+    return reset($result);
+  }
+
+  /**
+   * Map multiple Recurly entity UUIDs to their entity ID.
+   *
+   * @param array $uuids
+   *   An array of Recurly entity UUIDs.
+   *
+   * @return array
+   *   An array of entity IDs, keyed by their UUID.
+   */
+  public function entityIdMultiple(array $uuids) {
+    $ids = entity_get_id_by_uuid($this->entityType, $uuids);
+    // TODO: If a UUID isn't found, pull it down.
+    return $ids;
+  }
+
+  /**
+   * Map an Entity ID to a Recurly UUID.
+   *
+   * @param int $entity_id
+   *   The entity ID of the Recurly entity.
+   *
+   * @return string
+   *   The unique Recurly UUID, or FALSE if one is not found.
+   */
+  public function recurlyCode($entity_id) {
+    $result = $this->recurlyCodeMultiple(array($entity_id));
+    return reset($result);
+  }
+
+  /**
+   * Map multiple entity IDs to their Recurly UUID.
+   *
+   * @param array $entity_ids
+   *   The array of entity IDs to map.
+   *
+   * @return array
+   *   An array of Recurly UUIDs.
+   */
+  public function recurlyCodeMultiple(array $entity_ids) {
+    return entity_get_uuid_by_id($this->entityType, $entity_ids);
+  }
 }
