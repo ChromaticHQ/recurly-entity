@@ -19,7 +19,7 @@ class RecurlyAdjustment extends RecurlyEntity {
 
     // Generate a title for this adjustment.
     if (!isset($values['title'])) {
-      $values['title'] = $values['uuid'];
+      $values['title'] = substr($values['description'], 0, 255);
     }
 
     // Map the Recurly account from the subscription to a local owner ID. Most
