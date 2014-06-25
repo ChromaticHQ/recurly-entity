@@ -33,7 +33,7 @@ interface RecurlyRemoteEntity {
    * @return int
    *   The entity ID of the recurly object, if it exists.
    */
-  public function entityId($plan_code);
+  public function entityId($code);
 
   /**
    * Map multiple Recurly codes to their entity ID.
@@ -44,7 +44,7 @@ interface RecurlyRemoteEntity {
    * @return array
    *   An array of entity IDs, keyed by their code.
    */
-  public function entityIdMultiple(array $plan_codes);
+  public function entityIdMultiple(array $codes);
 
   /**
    * Map an Entity ID to a Recurly code.
