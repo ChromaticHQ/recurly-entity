@@ -133,6 +133,8 @@ function recurly_entity_entity_info() {
       'plural label' => t('Adjustments'),
       'entity class' => 'RecurlyAdjustment',
       'controller class' => 'RecurlyAdjustmentController',
+      'metadata controller class' => 'RecurlyAdjustmentMetadataController',
+      'extra fields controller class' => 'EntityDefaultExtraFieldsController',
       'base table' => 'recurly_adjustment',
       'entity cache' => TRUE,
       'entity keys' => array(
