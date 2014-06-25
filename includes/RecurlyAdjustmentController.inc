@@ -14,18 +14,7 @@ class RecurlyAdjustmentController extends RecurlyAPIController {
   public function loadFromRecurly($uuid) {
     recurly_client_initialize();
     $adjustment = Recurly_Adjustment::get($uuid);
-    $attributes = array(
-      'currency','unit_amount_in_cents','quantity','description',
-      'accounting_code','invoice','account',
-    );
-
-    $values = array();
-    foreach ($attributes as $attr) {
-      if (isset($adjustment->$attr)) {
-        $values[$attr] = $adjustment->$attr;
-      }
-    }
-
+    $values = $adjustment->values();
     $adjustment_entity = new RecurlyAdjustment($values);
 
     // Update our local entity cache, but only if we have saved this adjustment
