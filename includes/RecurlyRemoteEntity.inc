@@ -12,6 +12,9 @@ interface RecurlyRemoteEntity {
    * @param array $ids
    *   An array of Recurly IDs to load, such as the plan_code for a Subscription
    *   Plan or the account_code for an Account.
+   *
+   * @return array
+   *   An array of Recurly entities.
    */
   public function loadFromRecurlyMultiple(array $ids);
 
@@ -21,6 +24,9 @@ interface RecurlyRemoteEntity {
    * @param $id
    *   The ID of the entity to load, such as the plan_code for a Subscription
    *   Plan or the account_code for an Account.
+   *
+   * @return RecurlyEntity
+   *   The Recurly entity that was loaded.
    */
   public function loadFromRecurly($id);
 
