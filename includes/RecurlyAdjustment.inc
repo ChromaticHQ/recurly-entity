@@ -34,6 +34,9 @@ class RecurlyAdjustment extends RecurlyEntity {
       }
     }
 
+    // Pop out the stub invoice into a UUID.
+    $values['invoice'] = $values['invoice']->get()->uuid;
+
     parent::__construct($values, $entityType);
   }
 }
