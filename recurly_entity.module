@@ -31,6 +31,14 @@ function recurly_entity_menu() {
     'file' => 'recurly_entity.admin.inc',
   );
 
+  $items['recurly/adjustment/%recurly_adjustment'] = array(
+    'page callback' => 'recurly_adjustment_view',
+    'page arguments' => array(2),
+    'access callback' => 'recurly_entity_adjustment_access',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -145,6 +153,7 @@ function recurly_entity_entity_info() {
       // Use the default label() and uri() functions.
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
+      'access callback' => 'recurly_entity_adjustment_access',
       'fieldable' => TRUE,
       'bundles' => array(
         'recurly_adjustment' => array(
@@ -186,6 +195,11 @@ function recurly_entity_permission() {
       'description' => t('Allows users to manage imported Recurly subscription plans.'),
       'restrict access' => TRUE,
     ),
+    'administer recurly adjustments' => array(
+      'title' => t('Administer Recurly adjustments'),
+      'description' => t('Allows users to manage imported Recurly adjustments.'),
+      'restrict access' => TRUE,
+    ),
   );
 
   return $permissions;
@@ -211,6 +225,13 @@ function recurly_entity_help($path, $arg) {
  */
 function recurly_entity_subscription_plan_access($op, $subscription_plan = NULL, $account = NULL) {
   return user_access('administer recurly subscription plans', $account);
+}
+
+/**
+ * Access callback for Adjustments.
+ */
+function recurly_entity_adjustment_access($op, $adjustment = NULL, $account = NULL) {
+  return user_access('administer recurly adjustments', $account);
 }
 
 /**
@@ -317,6 +338,20 @@ function recurly_adjustment_load($id) {
 function recurly_subscription_plan_view(RecurlySubscriptionPlan $subscription_plan) {
   drupal_set_title($subscription_plan->label());
   return entity_view('recurly_subscription_plan', array($subscription_plan));
+}
+
+/**
+ * View an adjustment.
+ *
+ * @param RecurlyAdjustment $adjustment
+ *   The adjustment to view.
+ *
+ * @return string
+ *   HTML representing the subscription plan.
+ */
+function recurly_adjustment_view(RecurlyAdjustment $adjustment) {
+  drupal_set_title($adjustment->label());
+  return entity_view('recurly_adjustment', array($adjustment));
 }
 
 /**
