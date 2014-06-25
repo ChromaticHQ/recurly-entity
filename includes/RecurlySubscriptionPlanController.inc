@@ -25,24 +25,6 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
   }
 
   /**
-   * Helper to load multiple subscription plans at once.
-   *
-   * @param array $plan_codes
-   *   An array of Recurly Subscription plan codes.
-   *
-   * @return array
-   *   An array of RecurlySubscriptionPlan entities.
-   */
-  public function loadFromRecurlyMultiple(array $plan_codes) {
-    $entities = array();
-    foreach ($plan_codes as $plan_code) {
-      $entities[] = $this->loadFromRecurly($plan_code);
-    }
-
-    return $entities;
-  }
-
-  /**
    * @{inheritdoc}
    *
    * @return RecurlySubscriptionPlan

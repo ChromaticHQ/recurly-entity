@@ -58,4 +58,20 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
       EntityCacheControllerHelper::entityCacheSet($this, $entities);
     }
   }
+
+  /**
+   * Load an entity from Recurly using it's unique identifier.
+   *
+   * @param array $ids
+   *   An array of Recurly IDs to load, such as the plan_code for a Subscription
+   *   Plan or the account_code for an Account.
+   */
+  public function loadFromRecurlyMultiple(array $ids) {
+    $entities = array();
+    foreach ($ids as $id) {
+      $entities[] = $this->loadFromRecurly($id);
+    }
+
+    return $entities;
+  }
 }

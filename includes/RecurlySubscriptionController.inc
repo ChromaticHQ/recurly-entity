@@ -19,24 +19,6 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
   }
 
   /**
-   * Helper to load multiple subscriptions at once.
-   *
-   * @param array $uuids
-   *   An array of Recurly Subscription uuids.
-   *
-   * @return array
-   *   An array of RecurlySubscription entities.
-   */
-  public function loadFromRecurlyMultiple(array $uuids) {
-    $entities = array();
-    foreach ($uuids as $uuid) {
-      $entities[] = $this->loadFromRecurly($uuid);
-    }
-
-    return $entities;
-  }
-
-  /**
    * @{inheritdoc}
    *
    * @return RecurlySubscription
