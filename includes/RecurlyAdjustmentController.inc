@@ -16,13 +16,13 @@ class RecurlyAdjustmentController extends RecurlyAPIController {
     $adjustment = Recurly_Adjustment::get($uuid);
     $attributes = array(
       'currency','unit_amount_in_cents','quantity','description',
-      'accounting_code', 'invoice',
+      'accounting_code','invoice','account'
     );
 
     $values = array();
     foreach ($attributes as $attr) {
       if (isset($adjustment->$attr)) {
-        $values[$attr] = $plan->$attr;
+        $values[$attr] = $adjustment->$attr;
       }
     }
 
