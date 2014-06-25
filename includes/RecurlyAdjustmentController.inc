@@ -41,29 +41,32 @@ class RecurlyAdjustmentController extends RecurlyAPIController {
   }
 
   /**
-   * Map a Recurly code to an entity ID.
+   * Map a uuid to an entity ID.
    *
-   * @param string $code
-   *   The unique Recurly code, such as an account code or plan code.
+   * @param string $uuid
+   *   The UUID of the adjustment.
    *
    * @return int
    *   The entity ID of the recurly object, if it exists.
    */
-  public function entityId($plan_code) {
-    // TODO: Implement entityId() method.
+  public function entityId($uuid) {
+    $result = $this->entityIdMultiple(array($uuid));
+    return reset($result);
   }
 
   /**
-   * Map multiple Recurly codes to their entity ID.
+   * Map multiple Recurly UUIDs to their entity ID.
    *
-   * @param array $codes
-   *   An array of Recurly codes.
+   * @param array $uuids
+   *   An array of adjustment UUIDs.
    *
    * @return array
-   *   An array of entity IDs, keyed by their code.
+   *   An array of entity IDs, keyed by their UUID.
    */
-  public function entityIdMultiple(array $plan_codes) {
-    // TODO: Implement entityIdMultiple() method.
+  public function entityIdMultiple(array $uuids) {
+    $ids = entity_get_id_by_uuid('recurly_subscription', $uuids);
+    // TODO: If a UUID isn't found, pull it down.
+    return $ids;
   }
 
   /**
@@ -76,7 +79,8 @@ class RecurlyAdjustmentController extends RecurlyAPIController {
    *   The unique Recurly code.
    */
   public function recurlyCode($entity_id) {
-    // TODO: Implement recurlyCode() method.
+    $result = $this->recurlyCodeMultiple(array($entity_id));
+    return reset($result);
   }
 
   /**
@@ -89,6 +93,6 @@ class RecurlyAdjustmentController extends RecurlyAPIController {
    *   An array of recurly codes.
    */
   public function recurlyCodeMultiple(array $entity_ids) {
-    // TODO: Implement recurlyCodeMultiple() method.
+    return entity_get_uuid_by_id('recurly_adjustment', $entity_ids);
   }
 }
