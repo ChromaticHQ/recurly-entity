@@ -8,6 +8,21 @@
 class RecurlySubscriptionPlanController extends RecurlyAPIController implements RecurlyRemoteEntity {
 
   /**
+   * Override save() to not validate the owner of subscription plans.
+   *
+   * @param RecurlySubscription $subscription_plan
+   *   The RecurlySubscription being saved.
+   * @param DatabaseTransaction $transaction
+   *   Optional parameter of the transaction associated with this save.
+   *
+   * @return bool|int
+   *   The status of the save operation.
+   */
+  public function save($subscription_plan, DatabaseTransaction $transaction = NULL) {
+    return parent::save($subscription_plan, $transaction, FALSE);
+  }
+
+  /**
    * Overrides EntityAPIController#buildContent().
    */
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {

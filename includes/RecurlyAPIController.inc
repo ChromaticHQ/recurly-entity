@@ -130,4 +130,43 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
   public function recurlyCodeMultiple(array $entity_ids) {
     return entity_get_uuid_by_id($this->entityType, $entity_ids);
   }
+
+  /**
+   * Override save() to check for a valid local subscription owner.
+   *
+   * @param RecurlyEntity $entity
+   *   The recurly entity being saved.
+   * @param DatabaseTransaction $transaction
+   *   Optional parameter of the transaction associated with this save.
+   * @param bool $validate_owner
+   *   Optional parameter to validate the owner of the entity before saving.
+   *   Defaults to TRUE.
+   *
+   * @return bool|int
+   *   The status of the save operation.
+   */
+  public function save($entity, DatabaseTransaction $transaction = NULL, $validate_owner = TRUE) {
+    if ($validate_owner) {
+      $this->validateOwner($entity);
+    }
+
+    return parent::save($entity, $transaction);
+  }
+
+  /**
+   * Validate that a Recurly entity has a local Drupal owner.
+   *
+   * @param RecurlyEntity $entity
+   *   The entity to validate has both an entity_type and entity_id property.
+   *
+   * @throws RecurlyMissingOwnerException
+   */
+  protected function validateOwner(RecurlyEntity $entity) {
+    if (!isset($entity->entity_type) || !isset($entity->entity_id)) {
+      throw new RecurlyMissingOwnerException('Subscriptions must have an associated owner entity to be saved.');
+    }
+  }
 }
+
+// Generic exception for when a entity has no valid owner.
+class RecurlyMissingOwnerException extends Exception {}
