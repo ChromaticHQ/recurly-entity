@@ -24,6 +24,9 @@ class RecurlyAdjustmentUIController extends EntityDefaultUIController {
 
   /**
    * Overrides overviewTableRow().
+   *
+   * Removes all links to clone an adjustment, since adjustments must be
+   * created through Recurly.
    */
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = array()) {
     $entity_uri = entity_uri($this->entityType, $entity);
