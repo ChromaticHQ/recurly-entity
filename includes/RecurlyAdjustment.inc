@@ -40,6 +40,11 @@ class RecurlyAdjustment extends RecurlyEntity {
     // Pop out the stub invoice into a UUID.
     $values['invoice'] = $values['invoice']->get()->uuid;
 
+    // Convert the created at date into a DATETIME.
+    $values['created_at'] = $values['created_at']
+      ->setTimezone(new DateTimeZone('UTC'))
+      ->format('Y-m-d H:i:s');
+
     parent::__construct($values, $entityType);
   }
 

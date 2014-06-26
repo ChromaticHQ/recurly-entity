@@ -126,6 +126,11 @@ function recurly_entity_schema() {
         'length' => 20,
         'description' => 'The accounting code of the adjustment.',
       ),
+      'created_at' => array(
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'description' => 'The date and time that the adjustment was created at, in UTC.',
+      ),
       'invoice' => $uuid_spec + array('not null' => FALSE),
       'entity_type' => array(
         'type' => 'varchar',
@@ -273,6 +278,11 @@ function recurly_entity_update_7102() {
         'type' => 'varchar',
         'length' => 20,
         'description' => 'The accounting code of the adjustment.',
+      ),
+      'created_at' => array(
+        'mysql_type' => 'DATETIME',
+        'pgsql_type' => 'timestamp without time zone',
+        'description' => 'The date and time that the adjustment was created at, in UTC.',
       ),
       'invoice' => $uuid_spec + array('not null' => FALSE),
       'entity_type' => array(
