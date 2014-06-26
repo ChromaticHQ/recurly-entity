@@ -6,6 +6,9 @@ class RecurlyAdjustment extends RecurlyEntity {
    * Override __construct to force an entity type.
    */
   public function __construct(array $values = array(), $entityType = 'recurly_adjustment') {
+    // Adjustments are not modifiable by the user.
+    $this->status = ENTITY_FIXED;
+
     // TODO: Can this be moved up to RecurlyEntity for everything with a UUID?
     // We need to map to a local ID if possible. This can happen if a plan has
     // been saved locally but our entity cache is empty.

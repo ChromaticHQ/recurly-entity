@@ -170,6 +170,10 @@ function recurly_entity_entity_info() {
         ),
       ),
       'module' => 'recurly_entity',
+      'admin ui' => array(
+        'path' => 'admin/content/recurly-adjustment',
+        'controller class' => 'RecurlyAdjustmentUIController',
+      ),
       'view modes' => array(
         'full' => array(
           'label' => t('Full adjustment'),
