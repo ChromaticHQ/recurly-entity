@@ -132,7 +132,7 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
   }
 
   /**
-   * Override save() to check for a valid local subscription owner.
+   * Override save() to check for a valid local owner.
    *
    * @param RecurlyEntity $entity
    *   The recurly entity being saved.
