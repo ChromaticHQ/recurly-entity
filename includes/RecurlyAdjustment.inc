@@ -39,4 +39,13 @@ class RecurlyAdjustment extends RecurlyEntity {
 
     parent::__construct($values, $entityType);
   }
+
+  /**
+   * Overrides uri().
+   */
+  public function uri() {
+    return array(
+      'path' => 'recurly/adjustment/' . $this->id,
+    );
+  }
 }
