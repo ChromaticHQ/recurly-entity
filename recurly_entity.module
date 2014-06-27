@@ -29,6 +29,7 @@ function recurly_entity_menu() {
     'access arguments' => array('administer recurly'),
     'type' => MENU_CALLBACK,
     'file' => 'recurly_entity.admin.inc',
+    'file path' => drupal_get_path('module', 'recurly_entity') .  '/includes',
   );
 
   $items['recurly/adjustment/%recurly_adjustment'] = array(
@@ -130,6 +131,7 @@ function recurly_entity_entity_info() {
       'admin ui' => array(
         'path' => 'admin/content/recurly_subscription_plans',
         'file' => 'recurly_entity.admin.inc',
+        'file path' => drupal_get_path('module', 'recurly_entity') .  '/includes',
         'controller class' => 'RecurlySubscriptionPlanUIController',
       ),
       'view modes' => array(
