@@ -23,14 +23,14 @@ class RecurlyEntity extends Entity {
    * Most of the time this will be a user id, but the Recurly module allows
    * accounts to be mapped to any entity type.
    *
-   * @param Recurly_Account $account
-   *   The Recurly account to find the entity IDs for.
+   * @param string $account_code
+   *   The Recurly account code to find the entity IDs for.
    *
    * @return array
    *   An array with the entity type and entity ID.
    */
-  public static function entityOwner(Recurly_Account $account) {
-    $local_account = recurly_account_load(array('account_code' => $account->account_code), TRUE);
+  public static function entityOwner($account_code) {
+    $local_account = recurly_account_load(array('account_code' => $account_code), TRUE);
     if ($local_account) {
       return array(
         'entity_type' => $local_account->entity_type,
@@ -50,8 +50,16 @@ class RecurlyEntity extends Entity {
    */
   protected function setOwner(array &$values) {
     if (!isset($values['entity_type']) || !isset($values['entity_id'])) {
-      $account = $values['account']->get();
-      if ($owner = $this->entityOwner($account)) {
+      // See if this object has an account_code; that might save us from having
+      // to do a remote account load.
+      if (isset($values['account_code'])) {
+        $account_code = $values['account_code'];
+      }
+      else {
+        $account_code = $values['account']->idFromHref();
+      }
+
+      if ($owner = $this->entityOwner($account_code)) {
         $values = array_merge($values, $owner);
       }
     }
