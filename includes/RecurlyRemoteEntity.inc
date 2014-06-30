@@ -21,7 +21,7 @@ interface RecurlyRemoteEntity {
   /**
    * Load an entity from Recurly using it's unique identifier.
    *
-   * @param $id
+   * @param string $id
    *   The ID of the entity to load, such as the plan_code for a Subscription
    *   Plan or the account_code for an Account.
    *
@@ -73,4 +73,12 @@ interface RecurlyRemoteEntity {
    *   An array of recurly codes.
    */
   public function recurlyCodeMultiple(array $entity_ids);
+
+  /**
+   * Return the Recurly class that should be used to interact with Recurly.
+   *
+   * @return Recurly_Resource
+   *   The Recurly_Resource class, such as Recurly_Subscription.
+   */
+  public function resourceClass();
 }

@@ -40,29 +40,6 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
   }
 
   /**
-   * @{inheritdoc}
-   *
-   * @return RecurlySubscriptionPlan
-   */
-  public function loadFromRecurly($plan_code) {
-    recurly_client_initialize();
-    $plan = Recurly_Plan::get($plan_code);
-    $values = $plan->values();
-    $plan_entity = new RecurlySubscriptionPlan($values);
-
-    // Update our local entity cache, but only if we have saved this plan
-    // locally.
-    if (isset($plan_entity->id)) {
-      // Attach our fields.
-      $wrapper = array($plan_entity->id => $plan_entity);
-      $this->attachLoad($wrapper);
-      $this->entityCacheSet(array($plan_entity));
-    }
-
-    return $plan_entity;
-  }
-
-  /**
    * Load a Recurly Subscription Plan by it's plan code.
    *
    * @param string $plan_code
@@ -198,5 +175,15 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
     }
 
     return $build;
+  }
+
+  /**
+   * Return the Recurly class that should be used to interact with Recurly.
+   *
+   * @return Recurly_Plan
+   *   A Recurly_Plan class.
+   */
+  public function resourceClass() {
+    return new Recurly_Plan();
   }
 }

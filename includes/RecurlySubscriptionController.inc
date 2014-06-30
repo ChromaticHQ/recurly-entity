@@ -8,31 +8,6 @@
 class RecurlySubscriptionController extends RecurlyAPIController implements RecurlyRemoteEntity {
 
   /**
-   * @{inheritdoc}
-   *
-   * @return RecurlySubscription
-   */
-  public function loadFromRecurly($uuid) {
-    recurly_client_initialize();
-    $subscription = Recurly_Subscription::get($uuid);
-
-    $values = $subscription->getValues();
-
-    $subscription_entity = new RecurlySubscription($values);
-
-    // Update our local entity cache, but only if we have saved this plan
-    // locally.
-    if (isset($subscription_entity->id)) {
-      // Attach our fields.
-      $wrapper = array($subscription_entity->id => $subscription_entity);
-      $this->attachLoad($wrapper);
-      $this->entityCacheSet(array($subscription_entity));
-    }
-
-    return $subscription_entity;
-  }
-
-  /**
    * Load a Recurly Subscription by it's UUID.
    *
    * @param string $uuid
@@ -119,6 +94,16 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
     }
 
     return array();
+  }
+
+  /**
+   * Return the Recurly class that should be used to interact with Recurly.
+   *
+   * @return Recurly_Subscription
+   *   The Recurly_Subscription class.
+   */
+  public function resourceClass() {
+    return new Recurly_Subscription();
   }
 }
 

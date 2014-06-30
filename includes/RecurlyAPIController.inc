@@ -163,8 +163,55 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
    */
   protected function validateOwner(RecurlyEntity $entity) {
     if (!isset($entity->entity_type) || !isset($entity->entity_id)) {
-      throw new RecurlyMissingOwnerException('Subscriptions must have an associated owner entity to be saved.');
+      throw new RecurlyMissingOwnerException('This entity must have an associated owner entity to be saved.');
     }
+  }
+
+  /**
+   * Load an entity from Recurly using it's unique identifier.
+   *
+   * @param string $id
+   *   The ID of the resource to load.
+   *
+   * @return RecurlyEntity
+   *   The entity that was loaded.
+   */
+  public function loadFromRecurly($id) {
+    recurly_client_initialize();
+
+    $resource = $this->resourceClass();
+    $response = $resource->get($id);
+    $this->loadFromResource($response);
+  }
+
+  /**
+   * Load a Recurly Entity from a Recurly_Resource object.
+   *
+   * This method is best used when another request has already loaded an object
+   * from Recurly. Otherwise, call loadFromRecurly() with an ID to load.
+   *
+   * @param Recurly_Resource $resource
+   *   The Recurly object to load an entity from.
+   *
+   * @return RecurlyEntity
+   *   The entity that was loaded.
+   */
+  public function loadFromResource(Recurly_Resource $resource) {
+    // We can't use create() as it only works for new entities.
+    if (isset($this->entityInfo['entity class']) && $class = $this->entityInfo['entity class']) {
+      $entity = new $class($resource->getValues());
+    }
+
+    // Update our local entity cache, but only if we have saved this entity
+    // locally.
+    if (isset($entity->id)) {
+      // Attach our fields.
+      $wrapper = array($entity->id => $entity);
+      $this->attachLoad($wrapper);
+      $this->entityCacheSet(array($entity));
+    }
+
+    return $entity;
   }
 }
 
