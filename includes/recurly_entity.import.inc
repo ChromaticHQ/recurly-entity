@@ -1,9 +1,13 @@
 <?php
 
+/**
+ * Imports and saves all Adjustments in Recurly to our local entity tables.
+ */
 function recurly_entity_adjustment_import() {
   recurly_client_initialize();
   $invoices = Recurly_InvoiceList::get();
   $last_watermark = variable_get('recurly_entity_invoice_watermark', "");
+
   $adjustments = 0;
   foreach ($invoices as $invoice) {
     // Keep track of what the most recent UUID is from Recurly.
@@ -14,12 +18,20 @@ function recurly_entity_adjustment_import() {
     // If we have seen this invoice, we can raise our mark up to the first
     // invoice we saw.
     if ($invoice->uuid == $last_watermark) {
+      watchdog('recurly_entity', 'All Recurly adjustments have been imported.');
       break;
+    }
+
+    // If this invoice can't be mapped to a local Recurly user, neither can the
+    // associated adjustments.
+    $account_code = $invoice->account->idFromHref();
+    if (!RecurlyEntity::entityOwner($account_code)) {
+      watchdog('recurly_entity', 'Invoice @uuid was skipped during adjustment import as it is not owned by a local Drupal user or entity.', array('@uuid' => $invoice->uuid));
+      continue;
     }
 
     foreach ($invoice->line_items as $adjustment) {
       $adjustments++;
-      watchdog('recurly_entity', 'Imported @count adjustments.', array('@count' => $adjustments));
       $adjustment_entity = entity_get_controller('recurly_adjustment')
         ->loadFromResource($adjustment);
 
@@ -32,6 +44,8 @@ function recurly_entity_adjustment_import() {
       }
     }
   }
+
+  watchdog('recurly_entity', 'Imported @count adjustments.', array('@count' => $adjustments));
 
   // In the case where there aren't any new invoices, we don't update our
   // watermark to save clearing the variables cache.
