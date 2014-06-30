@@ -25,17 +25,7 @@ class RecurlyAdjustment extends RecurlyEntity {
       $values['title'] = substr($values['description'], 0, 255);
     }
 
-    // Map the Recurly account from the subscription to a local owner ID. Most
-    // of the time this will be a user id, but the Recurly module allows
-    // accounts to be mapped to any entity type.
-    if (!isset($values['entity_type']) || !isset($values['entity_id'])) {
-      $account = $values['account']->get();
-      $local_account = recurly_account_load(array('account_code' => $account->account_code), TRUE);
-      if ($local_account) {
-        $values['entity_type'] = $local_account->entity_type;
-        $values['entity_id'] = $local_account->entity_id;
-      }
-    }
+    $this->setOwner($values);
 
     // Pop out the stub invoice into a UUID.
     $values['invoice'] = $values['invoice']->get()->uuid;
