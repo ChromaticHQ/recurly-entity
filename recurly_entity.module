@@ -230,6 +230,14 @@ function recurly_entity_help($path, $arg) {
 }
 
 /**
+ * Implements hook_cron().
+ */
+function recurly_entity_cron() {
+  module_load_include('inc', 'recurly_entity', 'includes/recurly_entity.import');
+  recurly_entity_adjustment_import();
+}
+
+/**
  * Access callback for Subscription Plans.
  */
 function recurly_entity_subscription_plan_access($op, $subscription_plan = NULL, $account = NULL) {
