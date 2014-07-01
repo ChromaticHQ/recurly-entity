@@ -33,7 +33,7 @@ class RecurlyAdjustment extends RecurlyEntity {
     // Convert the created at date into a DATETIME.
     $values['created_at'] = $values['created_at']
       ->setTimezone(new DateTimeZone('UTC'))
-      ->format('Y-m-d H:i:s');
+      ->format('U');
 
     parent::__construct($values, $entityType);
   }
