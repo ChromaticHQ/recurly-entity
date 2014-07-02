@@ -28,7 +28,9 @@ class RecurlyAdjustment extends RecurlyEntity {
     $this->setOwner($values);
 
     // Pop out the stub invoice into a UUID.
-    $values['invoice'] = $values['invoice']->get()->uuid;
+    if (isset($values['invoice'])) {
+      $values['invoice'] = $values['invoice']->get()->uuid;
+    }
 
     // Convert the created at date into a DATETIME.
     $values['created_at'] = $values['created_at']
