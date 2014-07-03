@@ -233,8 +233,10 @@ function recurly_entity_help($path, $arg) {
  * Implements hook_cron().
  */
 function recurly_entity_cron() {
-  module_load_include('inc', 'recurly_entity', 'includes/recurly_entity.import');
-  recurly_entity_adjustment_queue();
+  if (variable_get('recurly_entity_adjustment_import', FALSE)) {
+    module_load_include('inc', 'recurly_entity', 'includes/recurly_entity.import');
+    recurly_entity_adjustment_queue();
+  }
 }
 
 /**
