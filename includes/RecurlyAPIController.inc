@@ -181,7 +181,7 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
 
     $resource = $this->resourceClass();
     $response = $resource->get($id);
-    $this->loadFromResource($response);
+    return $this->loadFromResource($response);
   }
 
   /**
