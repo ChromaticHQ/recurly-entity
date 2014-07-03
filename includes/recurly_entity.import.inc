@@ -1,14 +1,10 @@
 <?php
 
-/**
- * Imports and saves all Adjustments in Recurly to our local entity tables.
- */
-function recurly_entity_adjustment_import() {
+function recurly_entity_invoice_queue() {
   recurly_client_initialize();
   $invoices = Recurly_InvoiceList::get();
   $last_watermark = variable_get('recurly_entity_invoice_watermark', "");
 
-  $adjustments = 0;
   foreach ($invoices as $invoice) {
     // Keep track of what the most recent UUID is from Recurly.
     if (!isset($first_invoice)) {
@@ -31,25 +27,30 @@ function recurly_entity_adjustment_import() {
     }
 
     foreach ($invoice->line_items as $adjustment) {
-      $adjustments++;
-      $adjustment_entity = entity_get_controller('recurly_adjustment')
-        ->loadFromResource($adjustment);
-
-      try {
-        watchdog('recurly_entity', 'Saving adjustment @uuid.', array('@uuid' => $adjustment->uuid));
-        $adjustment_entity->save();
-      }
-      catch (RecurlyMissingOwnerException $e) {
-        watchdog('recurly_entity', 'Adjustment @uuid was not imported as it is not owned by a local Drupal account or entity.', array('@uuid' => $adjustment->uuid));
-      }
+      $queue = DrupalQueue::get('recurly_entity_adjustment_import');
+      $queue->createItem($adjustment);
     }
   }
-
-  watchdog('recurly_entity', 'Imported @count adjustments.', array('@count' => $adjustments));
 
   // In the case where there aren't any new invoices, we don't update our
   // watermark to save clearing the variables cache.
   if ($first_invoice != $last_watermark) {
     variable_set('recurly_entity_invoice_watermark', $first_invoice);
+  }
+}
+
+/**
+ * Imports and saves all Adjustments in Recurly to our local entity tables.
+ */
+function recurly_entity_adjustment_import(Recurly_Adjustment $adjustment) {
+  $adjustment_entity = entity_get_controller('recurly_adjustment')
+    ->loadFromResource($adjustment);
+
+  try {
+    watchdog('recurly_entity', 'Saving adjustment @uuid.', array('@uuid' => $adjustment->uuid));
+    $adjustment_entity->save();
+  }
+  catch (RecurlyMissingOwnerException $e) {
+    watchdog('recurly_entity', 'Adjustment @uuid was not imported as it is not owned by a local Drupal account or entity.', array('@uuid' => $adjustment->uuid));
   }
 }

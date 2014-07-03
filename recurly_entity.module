@@ -229,6 +229,23 @@ function recurly_entity_help($path, $arg) {
   }
 }
 
+function recurly_entity_cron_queue_info() {
+  return array(
+    'recurly_entity_adjustment_import' => array(
+      'worker callback' => 'recurly_entity_adjustment_import',
+      'time' => 60,
+    ),
+  );
+}
+
+/**
+ * @param Recurly_Adjustment $adjustment
+ */
+function recurly_entity_adjustment_import_callback(Recurly_Adjustment $adjustment) {
+  module_load_include('inc', 'recurly_entity', 'includes/recurly_entity.import');
+  recurly_entity_adjustment_import($adjustment);
+}
+
 /**
  * Access callback for Subscription Plans.
  */
