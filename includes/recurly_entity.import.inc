@@ -1,5 +1,20 @@
 <?php
 
+/**
+ * Queue adjustments for importing.
+ *
+ * Importing adjustments is a two-step process. First, we have to query for
+ * invoices. From each invoice, an Adjustment is already returned fully-loaded.
+ * However, saving an adjustment could trigger additional Recurly API requests,
+ * or place a reasonable load on the local system as the entity system
+ * processes and saves the adjustment. As well, each adjustment is independent
+ * of one another, so by queuing them not only do we unblock the invoice call
+ * quickly, but we can potentially process adjustments with multiple queue
+ * runners on multiple servers.
+ *
+ * @param int $limit
+ *   Optional parameter of the maximum number of invoices to process.
+ */
 function recurly_entity_adjustment_queue($limit = 50) {
   recurly_client_initialize();
 
@@ -8,9 +23,11 @@ function recurly_entity_adjustment_queue($limit = 50) {
   // it's state in public methods and variables.
   if ($cached = cache_get('recurly_entity_invoice_pager')) {
     $invoices = $cached->data;
+    watchdog('recurly_entity', 'Loaded invoices from the local cache.', array(), WATCHDOG_DEBUG);
   }
   else {
     $invoices = Recurly_InvoiceList::get();
+    watchdog('recurly_entity', 'Loaded invoices from Recurly.', array(), WATCHDOG_DEBUG);
   }
 
   // TODO: Use cache for this variable?
@@ -37,6 +54,7 @@ function recurly_entity_adjustment_queue($limit = 50) {
 
     if (++$imported > $limit) {
       // Preserve our position for the next queue run.
+      watchdog('recurly_entity', 'Reached import limit.', array(), WATCHDOG_DEBUG);
       cache_set('recurly_entity_invoice_pager', $invoices);
       break;
     }
@@ -45,7 +63,7 @@ function recurly_entity_adjustment_queue($limit = 50) {
       // We can clear our current pager and start anew on the next run.
       cache_clear_all('recurly_entity_invoice_pager', 'cache');
       cache_clear_all('recurly_entity_invoice_first', 'cache');
-      watchdog('recurly_entity', 'All Recurly adjustments have been imported.');
+      watchdog('recurly_entity', 'All Recurly adjustments have been imported.', array(), WATCHDOG_DEBUG);
       break;
     }
 
@@ -62,7 +80,7 @@ function recurly_entity_adjustment_queue($limit = 50) {
     foreach ($invoice->line_items as $adjustment) {
       $queue = DrupalQueue::get('recurly_entity_adjustment_import');
       $queue->createItem($adjustment);
-      watchdog('recurly_entity', 'Adjustment @uuid has been queued for importing.', array('@uuid' => $adjustment->uuid));
+      watchdog('recurly_entity', 'Adjustment @uuid has been queued for importing.', array('@uuid' => $adjustment->uuid), WATCHDOG_DEBUG);
     }
 
     $invoices->next();
@@ -71,6 +89,7 @@ function recurly_entity_adjustment_queue($limit = 50) {
   // In the case where there aren't any new invoices, we don't update our
   // watermark to save clearing the variables cache.
   if ($imported < $limit && $first_invoice != $last_watermark) {
+    watchdog('recurly_entity', 'Setting the invoice watermark to @uuid.', array('@uuid' => $first_invoice), WATCHDOG_DEBUG);
     variable_set('recurly_entity_invoice_watermark', $first_invoice);
     cache_clear_all('recurly_entity_invoice_pager', 'cache');
     cache_clear_all('recurly_entity_invoice_first', 'cache');
@@ -87,6 +106,7 @@ function recurly_entity_adjustment_import(Recurly_Adjustment $adjustment) {
   try {
     watchdog('recurly_entity', 'Saving adjustment @uuid.', array('@uuid' => $adjustment->uuid));
     $adjustment_entity->save();
+    watchdog('recurly_entity', 'Saved adjustment entity ID @id for @uuid.', array('@id' => $adjustment_entity->id, '@uuid' => $adjustment_entity->uuid));
   }
   catch (RecurlyMissingOwnerException $e) {
     watchdog('recurly_entity', 'Adjustment @uuid was not imported as it is not owned by a local Drupal account or entity.', array('@uuid' => $adjustment->uuid));
