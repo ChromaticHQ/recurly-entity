@@ -12,6 +12,10 @@
  * quickly, but we can potentially process adjustments with multiple queue
  * runners on multiple servers.
  *
+ * This function is expected to be called from cron, which has it's own locking
+ * mechanism. If calling this manually, locking is the responsibility of the
+ * caller.
+ *
  * @param int $limit
  *   Optional parameter of the maximum number of invoices to process.
  */
