@@ -26,7 +26,13 @@ function recurly_entity_adjustment_queue($limit = 50) {
     $invoice = $invoices->current();
     // Keep track of what the most recent UUID is from Recurly.
     if (!isset($first_invoice)) {
-      $first_invoice = $invoice->uuid;
+      if ($cached = cache_get('recurly_entity_invoice_first')) {
+        $first_invoice = $cached->data;
+      }
+      else {
+        $first_invoice = $invoice->uuid;
+        cache_set('recurly_entity_invoice_first', $first_invoice);
+      }
     }
 
     if (++$imported > $limit) {
@@ -38,6 +44,7 @@ function recurly_entity_adjustment_queue($limit = 50) {
     if ($invoice->uuid == $last_watermark) {
       // We can clear our current pager and start anew on the next run.
       cache_clear_all('recurly_entity_invoice_pager', 'cache');
+      cache_clear_all('recurly_entity_invoice_first', 'cache');
       watchdog('recurly_entity', 'All Recurly adjustments have been imported.');
       break;
     }
@@ -65,6 +72,8 @@ function recurly_entity_adjustment_queue($limit = 50) {
   // watermark to save clearing the variables cache.
   if ($imported < $limit && $first_invoice != $last_watermark) {
     variable_set('recurly_entity_invoice_watermark', $first_invoice);
+    cache_clear_all('recurly_entity_invoice_pager', 'cache');
+    cache_clear_all('recurly_entity_invoice_first', 'cache');
   }
 }
 
