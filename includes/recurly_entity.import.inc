@@ -104,9 +104,8 @@ function recurly_entity_adjustment_import(Recurly_Adjustment $adjustment) {
     ->loadFromResource($adjustment);
 
   try {
-    watchdog('recurly_entity', 'Saving adjustment @uuid.', array('@uuid' => $adjustment->uuid));
     $adjustment_entity->save();
-    watchdog('recurly_entity', 'Saved adjustment entity ID @id for @uuid.', array('@id' => $adjustment_entity->id, '@uuid' => $adjustment_entity->uuid));
+    watchdog('recurly_entity', 'Saved adjustment entity ID @id for @uuid.', array('@id' => $adjustment_entity->id, '@uuid' => $adjustment_entity->uuid), WATCHDOG_DEBUG);
   }
   catch (RecurlyMissingOwnerException $e) {
     watchdog('recurly_entity', 'Adjustment @uuid was not imported as it is not owned by a local Drupal account or entity.', array('@uuid' => $adjustment->uuid));
