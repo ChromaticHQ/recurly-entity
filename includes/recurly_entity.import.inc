@@ -1,6 +1,6 @@
 <?php
 
-function recurly_entity_invoice_queue($limit = 50) {
+function recurly_entity_adjustment_queue($limit = 50) {
   recurly_client_initialize();
 
   // We cache a copy of our pager to persist between requests. Otherwise, there
@@ -17,7 +17,13 @@ function recurly_entity_invoice_queue($limit = 50) {
   $last_watermark = variable_get('recurly_entity_invoice_watermark', "");
 
   $imported = 0;
-  foreach ($invoices as $invoice) {
+  // We can't use foreach() as that resets the current position when it starts.
+  // Caching the pager object allows us to continue from the current position
+  // in a given result set. Another concern is the size of the cached pager.
+  // Recurly limits result sets to a maximum of 200 items, and Recurly_Pager
+  // resets it's internal array of pagers on each result set.
+  while ($invoices->valid()) {
+    $invoice = $invoices->current();
     // Keep track of what the most recent UUID is from Recurly.
     if (!isset($first_invoice)) {
       $first_invoice = $invoice->uuid;
@@ -31,7 +37,7 @@ function recurly_entity_invoice_queue($limit = 50) {
 
     if ($invoice->uuid == $last_watermark) {
       // We can clear our current pager and start anew on the next run.
-      cache_clear_all('recurly_entity_invoice_pager');
+      cache_clear_all('recurly_entity_invoice_pager', 'cache');
       watchdog('recurly_entity', 'All Recurly adjustments have been imported.');
       break;
     }
@@ -41,18 +47,23 @@ function recurly_entity_invoice_queue($limit = 50) {
     $account_code = $invoice->account->idFromHref();
     if (!RecurlyEntity::entityOwner($account_code)) {
       watchdog('recurly_entity', 'Invoice @uuid was skipped during adjustment import as it is not owned by a local Drupal user or entity.', array('@uuid' => $invoice->uuid));
+      $invoices->next();
       continue;
     }
 
+    // We've found an invoice to process.
     foreach ($invoice->line_items as $adjustment) {
       $queue = DrupalQueue::get('recurly_entity_adjustment_import');
       $queue->createItem($adjustment);
+      watchdog('recurly_entity', 'Adjustment @uuid has been queued for importing.', array('@uuid' => $adjustment->uuid));
     }
+
+    $invoices->next();
   }
 
   // In the case where there aren't any new invoices, we don't update our
   // watermark to save clearing the variables cache.
-  if ($first_invoice != $last_watermark) {
+  if ($imported < $limit && $first_invoice != $last_watermark) {
     variable_set('recurly_entity_invoice_watermark', $first_invoice);
   }
 }
