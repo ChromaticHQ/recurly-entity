@@ -1,19 +1,37 @@
 <?php
 
-function recurly_entity_invoice_queue() {
+function recurly_entity_invoice_queue($limit = 50) {
   recurly_client_initialize();
-  $invoices = Recurly_InvoiceList::get();
+
+  // We cache a copy of our pager to persist between requests. Otherwise, there
+  // is no way to retrieve the state of the pager without rewriting it to store
+  // it's state in public methods and variables.
+  if ($cached = cache_get('recurly_entity_invoice_pager')) {
+    $invoices = $cached->data;
+  }
+  else {
+    $invoices = Recurly_InvoiceList::get();
+  }
+
+  // TODO: Use cache for this variable?
   $last_watermark = variable_get('recurly_entity_invoice_watermark', "");
 
+  $imported = 0;
   foreach ($invoices as $invoice) {
     // Keep track of what the most recent UUID is from Recurly.
     if (!isset($first_invoice)) {
       $first_invoice = $invoice->uuid;
     }
 
-    // If we have seen this invoice, we can raise our mark up to the first
-    // invoice we saw.
+    if (++$imported > $limit) {
+      // Preserve our position for the next queue run.
+      cache_set('recurly_entity_invoice_pager', $invoices);
+      break;
+    }
+
     if ($invoice->uuid == $last_watermark) {
+      // We can clear our current pager and start anew on the next run.
+      cache_clear_all('recurly_entity_invoice_pager');
       watchdog('recurly_entity', 'All Recurly adjustments have been imported.');
       break;
     }
