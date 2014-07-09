@@ -40,6 +40,11 @@ function recurly_entity_adjustment_queue($limit = 500) {
   $last_watermark = variable_get('recurly_entity_invoice_watermark', "");
 
   $imported = 0;
+  $task = array(
+    'title' => format_string('Import adjustments.'),
+    'subtasks' => array(),
+  );
+
   // We can't use foreach() as that resets the current position when it starts.
   // Caching the pager object allows us to continue from the current position
   // in a given result set. Another concern is the size of the cached pager.
@@ -84,12 +89,31 @@ function recurly_entity_adjustment_queue($limit = 500) {
 
     // We've found an invoice to process.
     foreach ($invoice->line_items as $adjustment) {
-      $queue = DrupalQueue::get('recurly_entity_adjustment_import');
-      $queue->createItem($adjustment);
+      // Queue runner lets us run the import in parallel.
+      if (module_exists('queue_runner')) {
+        // Note that 'action' below doesn't directly call the function, but
+        // uses it as a key to find a worker from our queue_runner workers hook.
+        $subtask = array(
+          'title' => format_string('Import adjustment @uuid.', array('@uuid' => $adjustment->uuid)),
+          'action' => 'recurly_entity_adjustment_import',
+          'data' => array('adjustment' => $adjustment),
+        );
+        $task['subtasks'][] = $subtask;
+      }
+      else {
+        // Regular DrupalQueue support.
+        $queue = DrupalQueue::get('recurly_entity_adjustment_import_callback');
+        $queue->createItem(array('adjustment' => $adjustment));
+      }
+
       watchdog('recurly_entity', 'Adjustment @uuid has been queued for importing.', array('@uuid' => $adjustment->uuid), WATCHDOG_DEBUG);
     }
 
     $invoices->next();
+  }
+
+  if (module_exists('queue_runner') && !empty($task['subtasks'])) {
+    queue_runner_add($task, 'parallel_collector');
   }
 
   // In the case where there aren't any new invoices, we don't update our
