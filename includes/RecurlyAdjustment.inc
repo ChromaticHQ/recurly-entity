@@ -29,6 +29,7 @@ class RecurlyAdjustment extends RecurlyEntity {
 
     // Pop out the stub invoice into a UUID.
     if (isset($values['invoice'])) {
+      recurly_client_initialize();
       $values['invoice'] = $values['invoice']->get()->uuid;
     }
 
