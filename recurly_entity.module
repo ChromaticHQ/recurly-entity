@@ -271,7 +271,7 @@ function recurly_entity_cron_queue_info() {
   // will still be processed by cron.
   $queues['recurly_entity_adjustment_import'] = array(
     'worker callback' => 'recurly_entity_adjustment_import_callback',
-    'time' => 45,
+    'time' => 10,
   );
 
   return $queues;
