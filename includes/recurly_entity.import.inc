@@ -17,9 +17,11 @@
  * caller.
  *
  * @param int $limit
- *   Optional parameter of the maximum number of invoices to process.
+ *   Optional parameter of the maximum number of invoices to process. Defaults
+ *   to 500 items, which in a rough test uses at most around 10 seconds of cron
+ *   processing time.
  */
-function recurly_entity_adjustment_queue($limit = 50) {
+function recurly_entity_adjustment_queue($limit = 500) {
   recurly_client_initialize();
 
   // We cache a copy of our pager to persist between requests. Otherwise, there
