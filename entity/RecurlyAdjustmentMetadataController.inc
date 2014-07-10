@@ -11,6 +11,8 @@ class RecurlyAdjustmentMetadataController extends EntityDefaultMetadataControlle
    */
   public function entityPropertyInfo() {
     $info = parent::entityPropertyInfo();
+    $properties = &$info['recurly_adjustment']['properties'];
+    $properties['created_at']['type'] = 'date';
     return $info;
   }
 }
