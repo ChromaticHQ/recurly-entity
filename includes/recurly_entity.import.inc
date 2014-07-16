@@ -70,7 +70,7 @@ function recurly_entity_adjustment_queue($limit = 500) {
       // We can clear our current pager and start anew on the next run.
       cache_clear_all('recurly_entity_invoice_pager', 'cache');
       cache_clear_all('recurly_entity_invoice_first', 'cache');
-      watchdog('recurly_entity', 'All Recurly adjustments have been imported.', array(), WATCHDOG_DEBUG);
+      watchdog('recurly_entity', 'All Recurly adjustments have been queued for importing.', array(), WATCHDOG_DEBUG);
       break;
     }
 
