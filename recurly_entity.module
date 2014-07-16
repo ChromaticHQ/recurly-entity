@@ -242,27 +242,6 @@ function recurly_entity_cron() {
 }
 
 /**
- * Implements hook_modules_enabled().
- */
-/*
-function recurly_entity_modules_enabled($modules) {
-  // If we have turned on queue_runner, reset our core-driven queue.
-  if (in_array('queue_runner', $modules)) {
-    $queue = DrupalQueue::get('recurly_entity_adjustment_import');
-    $queue->deleteQueue();
-    variable_del('recurly_entity_invoice_watermark');
-  }
-}
-
-function recurly_entity_modules_disabled($modules) {
-  if (in_array('queue_runner', $modules)) {
-    queue_runner_disable()
-    variable_del('recurly_entity_invoice_watermark');
-  }
-}
-*/
-
-/**
  * Implements hook_cron_queue_info().
  */
 function recurly_entity_cron_queue_info() {
