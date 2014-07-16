@@ -204,6 +204,22 @@ function recurly_entity_theme() {
 }
 
 /**
+ * Implements hook_recurly_process_push_notification().
+ */
+function recurly_entity_recurly_process_push_notification($subdomain, Recurly_PushNotification $notification) {
+  switch ($notification->type) {
+    case 'expired_subscription_notification':
+      $subscription = entity_get_controller('recurly_subscription')
+        ->loadFromRecurly($notification->subscription->uuid);
+
+      if ($subscription->state == 'expired') {
+        $subscription->save();
+      }
+      break;
+  }
+}
+
+/**
  * Load a single subscription entity.
  *
  * @param int $id
