@@ -8,6 +8,21 @@
 class RecurlySubscriptionPlanController extends RecurlyAPIController implements RecurlyRemoteEntity {
 
   /**
+   * Override save() to not validate the owner of subscription plans.
+   *
+   * @param RecurlySubscription $subscription_plan
+   *   The RecurlySubscription being saved.
+   * @param DatabaseTransaction $transaction
+   *   Optional parameter of the transaction associated with this save.
+   *
+   * @return bool|int
+   *   The status of the save operation.
+   */
+  public function save($subscription_plan, DatabaseTransaction $transaction = NULL) {
+    return parent::save($subscription_plan, $transaction, FALSE);
+  }
+
+  /**
    * Overrides EntityAPIController#buildContent().
    */
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
@@ -22,64 +37,6 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
     }
 
     return $build;
-  }
-
-  /**
-   * Helper to load multiple subscription plans at once.
-   *
-   * @param array $plan_codes
-   *   An array of Recurly Subscription plan codes.
-   *
-   * @return array
-   *   An array of RecurlySubscriptionPlan entities.
-   */
-  public function loadFromRecurlyMultiple(array $plan_codes) {
-    $entities = array();
-    foreach ($plan_codes as $plan_code) {
-      $entities[] = $this->loadFromRecurly($plan_code);
-    }
-
-    return $entities;
-  }
-
-  /**
-   * @{inheritdoc}
-   *
-   * @return RecurlySubscriptionPlan
-   */
-  public function loadFromRecurly($plan_code) {
-    recurly_client_initialize();
-    $plan = Recurly_Plan::get($plan_code);
-
-    // Recurly_Plan::$_writeableAttributes is protected :(
-    $attributes = array(
-      'plan_code','name','description','success_url','cancel_url',
-      'display_donation_amounts','display_quantity','display_phone_number',
-      'bypass_hosted_confirmation','unit_name','payment_page_tos_link',
-      'plan_interval_length','plan_interval_unit','trial_interval_length',
-      'trial_interval_unit','unit_amount_in_cents','setup_fee_in_cents',
-      'total_billing_cycles','accounting_code'
-    );
-
-    $values = array();
-    foreach ($attributes as $attr) {
-      if (isset($plan->$attr)) {
-        $values[$attr] = $plan->$attr;
-      }
-    }
-
-    $plan_entity = new RecurlySubscriptionPlan($values);
-
-    // Update our local entity cache, but only if we have saved this plan
-    // locally.
-    if (isset($plan_entity->id)) {
-      // Attach our fields.
-      $wrapper = array($plan_entity->id => $plan_entity);
-      $this->attachLoad($wrapper);
-      $this->entityCacheSet(array($plan_entity));
-    }
-
-    return $plan_entity;
   }
 
   /**
@@ -218,5 +175,15 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
     }
 
     return $build;
+  }
+
+  /**
+   * Return the Recurly class that should be used to interact with Recurly.
+   *
+   * @return Recurly_Plan
+   *   A Recurly_Plan class.
+   */
+  public function resourceClass() {
+    return new Recurly_Plan();
   }
 }

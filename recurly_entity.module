@@ -31,6 +31,14 @@ function recurly_entity_menu() {
     'file' => 'recurly_entity.admin.inc',
   );
 
+  $items['recurly/adjustment/%recurly_adjustment'] = array(
+    'page callback' => 'recurly_adjustment_view',
+    'page arguments' => array(2),
+    'access callback' => 'recurly_entity_adjustment_access',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -44,6 +52,11 @@ function recurly_entity_menu_alter(&$items) {
     $items['admin/config/services/recurly/subscriptions'] = $items['admin/config/services/recurly/subscriptions/fields'];
     $items['admin/config/services/recurly/subscriptions']['title'] = 'Subscriptions';
     $items['admin/config/services/recurly/subscriptions/fields']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  }
+  if (isset($items['admin/config/services/recurly/adjustments/fields'])) {
+    $items['admin/config/services/recurly/adjustments'] = $items['admin/config/services/recurly/adjustments/fields'];
+    $items['admin/config/services/recurly/adjustments']['title'] = 'Adjustments';
+    $items['admin/config/services/recurly/adjustments/fields']['type'] = MENU_DEFAULT_LOCAL_TASK;
   }
 }
 
@@ -128,6 +141,45 @@ function recurly_entity_entity_info() {
         ),
       ),
     ),
+    'recurly_adjustment' => array(
+      'label' => t('Adjustment'),
+      'plural label' => t('Adjustments'),
+      'entity class' => 'RecurlyAdjustment',
+      'controller class' => 'RecurlyAdjustmentController',
+      'metadata controller class' => 'RecurlyAdjustmentMetadataController',
+      'extra fields controller class' => 'EntityDefaultExtraFieldsController',
+      'base table' => 'recurly_adjustment',
+      'entity cache' => TRUE,
+      'entity keys' => array(
+        'id' => 'id',
+        'label' => 'title',
+        'uuid' => 'uuid',
+      ),
+      // Use the default label() and uri() functions.
+      'label callback' => 'entity_class_label',
+      'uri callback' => 'entity_class_uri',
+      'access callback' => 'recurly_entity_adjustment_access',
+      'fieldable' => TRUE,
+      'bundles' => array(
+        'recurly_adjustment' => array(
+          'label' => t('Adjustment'),
+          'admin' => array(
+            'path' => 'admin/config/services/recurly/adjustments',
+            'access arguments' => array('administer recurly'),
+          ),
+        ),
+      ),
+      'module' => 'recurly_entity',
+      'admin ui' => array(
+        'path' => 'admin/content/recurly-adjustment',
+        'controller class' => 'RecurlyAdjustmentUIController',
+      ),
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full adjustment'),
+        ),
+      ),
+    ),
   );
 }
 
@@ -138,6 +190,7 @@ function recurly_entity_flush_caches() {
   return array(
     'cache_entity_recurly_subscription',
     'cache_entity_recurly_subscription_plan',
+    'cache_entity_recurly_adjustment',
   );
 }
 
@@ -149,6 +202,11 @@ function recurly_entity_permission() {
     'administer recurly subscription plans' => array(
       'title' => t('Administer Recurly subscription plans'),
       'description' => t('Allows users to manage imported Recurly subscription plans.'),
+      'restrict access' => TRUE,
+    ),
+    'administer recurly adjustments' => array(
+      'title' => t('Administer Recurly adjustments'),
+      'description' => t('Allows users to manage imported Recurly adjustments.'),
       'restrict access' => TRUE,
     ),
   );
@@ -176,6 +234,13 @@ function recurly_entity_help($path, $arg) {
  */
 function recurly_entity_subscription_plan_access($op, $subscription_plan = NULL, $account = NULL) {
   return user_access('administer recurly subscription plans', $account);
+}
+
+/**
+ * Access callback for Adjustments.
+ */
+function recurly_entity_adjustment_access($op, $adjustment = NULL, $account = NULL) {
+  return user_access('administer recurly adjustments', $account);
 }
 
 /**
@@ -259,6 +324,19 @@ function recurly_subscription_plan_code_load($plan_code) {
 }
 
 /**
+ * Load a single adjustment entity.
+ *
+ * @param int $id
+ *   The entity id of the adjustment.
+ *
+ * @return RecurlyAdjustment
+ *   The RecurlyAdjustment entity.
+ */
+function recurly_adjustment_load($id) {
+  return entity_load_single('recurly_adjustment', $id);
+}
+
+/**
  * View a subscription plan.
  *
  * @param RecurlySubscriptionPlan $subscription_plan
@@ -269,6 +347,20 @@ function recurly_subscription_plan_code_load($plan_code) {
 function recurly_subscription_plan_view(RecurlySubscriptionPlan $subscription_plan) {
   drupal_set_title($subscription_plan->label());
   return entity_view('recurly_subscription_plan', array($subscription_plan));
+}
+
+/**
+ * View an adjustment.
+ *
+ * @param RecurlyAdjustment $adjustment
+ *   The adjustment to view.
+ *
+ * @return string
+ *   HTML representing the subscription plan.
+ */
+function recurly_adjustment_view(RecurlyAdjustment $adjustment) {
+  drupal_set_title($adjustment->label());
+  return entity_view('recurly_adjustment', array($adjustment));
 }
 
 /**

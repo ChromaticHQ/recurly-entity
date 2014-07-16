@@ -12,15 +12,21 @@ interface RecurlyRemoteEntity {
    * @param array $ids
    *   An array of Recurly IDs to load, such as the plan_code for a Subscription
    *   Plan or the account_code for an Account.
+   *
+   * @return array
+   *   An array of Recurly entities.
    */
   public function loadFromRecurlyMultiple(array $ids);
 
   /**
    * Load an entity from Recurly using it's unique identifier.
    *
-   * @param $id
+   * @param string $id
    *   The ID of the entity to load, such as the plan_code for a Subscription
    *   Plan or the account_code for an Account.
+   *
+   * @return RecurlyEntity
+   *   The Recurly entity that was loaded.
    */
   public function loadFromRecurly($id);
 
@@ -33,7 +39,7 @@ interface RecurlyRemoteEntity {
    * @return int
    *   The entity ID of the recurly object, if it exists.
    */
-  public function entityId($plan_code);
+  public function entityId($code);
 
   /**
    * Map multiple Recurly codes to their entity ID.
@@ -44,7 +50,7 @@ interface RecurlyRemoteEntity {
    * @return array
    *   An array of entity IDs, keyed by their code.
    */
-  public function entityIdMultiple(array $plan_codes);
+  public function entityIdMultiple(array $codes);
 
   /**
    * Map an Entity ID to a Recurly code.
@@ -67,4 +73,12 @@ interface RecurlyRemoteEntity {
    *   An array of recurly codes.
    */
   public function recurlyCodeMultiple(array $entity_ids);
+
+  /**
+   * Return the Recurly class that should be used to interact with Recurly.
+   *
+   * @return Recurly_Resource
+   *   The Recurly_Resource class, such as Recurly_Subscription.
+   */
+  public function resourceClass();
 }
