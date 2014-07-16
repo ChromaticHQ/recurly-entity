@@ -127,9 +127,9 @@ function recurly_entity_schema() {
         'description' => 'The accounting code of the adjustment.',
       ),
       'created_at' => array(
-        'mysql_type' => 'DATETIME',
-        'pgsql_type' => 'timestamp without time zone',
-        'description' => 'The date and time that the adjustment was created at, in UTC.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The timestamp that the adjustment was created at, in UTC.',
       ),
       'invoice' => $uuid_spec + array('not null' => FALSE),
       'entity_type' => array(
@@ -280,9 +280,9 @@ function recurly_entity_update_7102() {
         'description' => 'The accounting code of the adjustment.',
       ),
       'created_at' => array(
-        'mysql_type' => 'DATETIME',
-        'pgsql_type' => 'timestamp without time zone',
-        'description' => 'The date and time that the adjustment was created at, in UTC.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The timestamp that the adjustment was created at, in UTC.',
       ),
       'invoice' => $uuid_spec + array('not null' => FALSE),
       'entity_type' => array(
@@ -312,4 +312,17 @@ function recurly_entity_update_7102() {
   foreach ($schema as $table => $spec) {
     db_create_table($table, $spec);
   }
+}
+
+/**
+ * Change the created_at column to a timestamp.
+ */
+function recurly_entity_update_7103() {
+  db_drop_field('recurly_adjustment', 'created_at');
+  db_add_field('recurly_adjustment', 'created_at', array(
+    'type' => 'int',
+    'not null' => TRUE,
+    'initial' => 0,
+    'description' => 'The timestamp that the adjustment was created at, in UTC.',
+  ));
 }

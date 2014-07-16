@@ -230,6 +230,80 @@ function recurly_entity_help($path, $arg) {
 }
 
 /**
+ * Implements hook_cron().
+ */
+function recurly_entity_cron() {
+  if (variable_get('recurly_entity_adjustment_import', FALSE)) {
+    module_load_include('inc', 'recurly_entity', 'includes/recurly_entity.import');
+    recurly_entity_adjustment_queue();
+  }
+}
+
+/**
+ * Implements hook_modules_enabled().
+ */
+/*
+function recurly_entity_modules_enabled($modules) {
+  // If we have turned on queue_runner, reset our core-driven queue.
+  if (in_array('queue_runner', $modules)) {
+    $queue = DrupalQueue::get('recurly_entity_adjustment_import');
+    $queue->deleteQueue();
+    variable_del('recurly_entity_invoice_watermark');
+  }
+}
+
+function recurly_entity_modules_disabled($modules) {
+  if (in_array('queue_runner', $modules)) {
+    queue_runner_disable()
+    variable_del('recurly_entity_invoice_watermark');
+  }
+}
+*/
+
+/**
+ * Implements hook_cron_queue_info().
+ */
+function recurly_entity_cron_queue_info() {
+  $queues = array();
+
+  // We allow our queue to be run even if Queue Runner is enabled. This ensures
+  // that if any queued jobs are left over after the module was enabled, they
+  // will still be processed by cron.
+  $queues['recurly_entity_adjustment_import'] = array(
+    'worker callback' => 'recurly_entity_adjustment_import_callback',
+    'time' => 10,
+  );
+
+  return $queues;
+}
+
+/**
+ * Implements hook_queue_runner_workers().
+ */
+function recurly_entity_queue_runner_workers() {
+  return array(
+    'recurly_entity_adjustment_import' => array(
+      'callback' => 'recurly_entity_adjustment_import_callback',
+    ),
+  );
+}
+
+/**
+ * Callback for importing an adjustment.
+ *
+ * This is required as core's queue hooks don't allow for automatically loading
+ * an include file.
+ *
+ * @param array $data
+ *   An array of data to process. It must contain an 'adjustment' key with the
+ *   Recurly_Adjustment object to import.
+ */
+function recurly_entity_adjustment_import_callback(array $data) {
+  module_load_include('inc', 'recurly_entity', 'includes/recurly_entity.import');
+  recurly_entity_adjustment_import($data['adjustment']);
+}
+
+/**
  * Access callback for Subscription Plans.
  */
 function recurly_entity_subscription_plan_access($op, $subscription_plan = NULL, $account = NULL) {
