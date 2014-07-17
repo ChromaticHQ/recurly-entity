@@ -259,6 +259,16 @@ function recurly_entity_cron_queue_info() {
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function recurly_entity_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'recurly_entity') . '/views',
+  );
+}
+
+/**
  * Implements hook_queue_runner_workers().
  */
 function recurly_entity_queue_runner_workers() {
