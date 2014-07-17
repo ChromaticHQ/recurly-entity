@@ -12,9 +12,7 @@ function recurly_entity_views_data_alter(&$data) {
       continue;
     }
 
-    $entity_info = $info[$entity_type];
     $data['recurly_adjustment'][$entity_type] = _recurly_entity_relationship_data('Recurly adjustment', $entity_type);
-    $data['recurly_adjustment']['table']['join'] = _recurly_entity_relationship_join($entity_info);
   }
 
   return $data;
