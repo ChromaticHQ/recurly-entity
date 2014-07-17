@@ -21,4 +21,3 @@ files[] = entity/RecurlySubscriptionPlanController.inc
 files[] = entity/RecurlySubscriptionPlanUIController.inc
 files[] = entity/RecurlySubscriptionPlan.inc
 files[] = entity/RecurlySubscriptionPlanMetadataController.inc
-files[] = views/recurly_entity_owner_handler.inc
