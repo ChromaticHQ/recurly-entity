@@ -132,6 +132,10 @@ function recurly_entity_schema() {
         'description' => 'The timestamp that the adjustment was created at, in UTC.',
       ),
       'invoice' => $uuid_spec + array('not null' => FALSE),
+      'invoice_number' => array(
+        'type' => 'int',
+        'description' => 'The number of the invoice this is associated with.',
+      ),
       'entity_type' => array(
         'type' => 'varchar',
         'length' => 255,
@@ -325,4 +329,17 @@ function recurly_entity_update_7103() {
     'initial' => 0,
     'description' => 'The timestamp that the adjustment was created at, in UTC.',
   ));
+}
+
+/**
+ * Add an invoice number column for adjustments.
+ */
+function recurly_entity_update_7104() {
+  db_add_field('recurly_adjustment', 'invoice_number', array(
+    'type' => 'int',
+    'description' => 'The number of the invoice this is associated with.',
+  ));
+
+  // Force refreshing of all adjustments to update the invoice number column.
+  variable_del('recurly_entity_invoice_watermark');
 }

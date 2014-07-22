@@ -30,7 +30,9 @@ class RecurlyAdjustment extends RecurlyEntity {
     // Pop out the stub invoice into a UUID.
     if (isset($values['invoice'])) {
       recurly_client_initialize();
-      $values['invoice'] = $values['invoice']->get()->uuid;
+      $invoice = $values['invoice']->get();
+      $values['invoice'] = $invoice->uuid;
+      $values['invoice_number'] = $invoice->invoice_number;
     }
 
     // Convert the created at date into a DATETIME.
