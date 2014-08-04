@@ -68,7 +68,7 @@ function recurly_entity_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'name' => array(
+      'title' => array(
         'description' => 'The readable name of the subscription plan.',
         'type' => 'varchar',
         'length' => 50,
@@ -342,4 +342,21 @@ function recurly_entity_update_7104() {
 
   // Force refreshing of all adjustments to update the invoice number column.
   variable_del('recurly_entity_invoice_watermark');
+}
+
+/**
+ * Rename name to title on subscription plans.
+ *
+ * 'name' is a special key for machine names only.
+ */
+function recurly_entity_update_7105() {
+  $spec= array(
+    'description' => 'The readable name of the subscription plan.',
+    'type' => 'varchar',
+    'length' => 50,
+    'not null' => TRUE,
+    'default' => '',
+  );
+
+  db_change_field('recurly_subscription_plan', 'name', 'title', $spec);
 }

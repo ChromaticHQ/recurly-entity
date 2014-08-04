@@ -111,7 +111,7 @@ function recurly_entity_entity_info() {
       'entity cache' => TRUE,
       'entity keys' => array(
         'id' => 'id',
-        'label' => 'name',
+        'label' => 'title',
       ),
       // Use the default label() and uri() functions
       'label callback' => 'entity_class_label',
