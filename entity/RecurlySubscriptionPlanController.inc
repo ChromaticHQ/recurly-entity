@@ -186,4 +186,22 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
   public function resourceClass() {
     return new Recurly_Plan();
   }
+
+  /**
+   * Overrides loadFromResource().
+   *
+   * "name" is a special key for machine names, so we can't use that as our
+   * label. We still preserve the data, but code using subscription plan
+   * entities should use label() or ->title directly.
+   *
+   * @param Recurly_Resource $subscription_plan
+   *   The subscription plan resource that was loaded from Recurly.
+   *
+   * @return RecurlySubscriptionPlan
+   *   The loaded Recurly Subscription Plan entity.
+   */
+  public function loadFromResource(Recurly_Resource $subscription_plan) {
+    $subscription_plan->title = $subscription_plan->name;
+    return parent::loadFromResource($subscription_plan);
+  }
 }
