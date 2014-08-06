@@ -71,7 +71,6 @@ function recurly_entity_entity_info() {
       'plural label' => t('Subscriptions'),
       'entity class' => 'RecurlySubscription',
       'controller class' => 'RecurlySubscriptionController',
-      'metadata controller class' => 'RecurlySubscriptionMetadataController',
       'extra fields controller class' => 'EntityDefaultExtraFieldsController',
       'base table' => 'recurly_subscription',
       'entity cache' => TRUE,
