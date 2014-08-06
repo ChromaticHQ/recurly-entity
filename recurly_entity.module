@@ -456,3 +456,22 @@ function recurly_entity_form_recurly_subscription_plans_form_alter(&$form, &$for
     }
   }
 }
+
+/**
+ * Entity API callback to return the total for an adjustment.
+ *
+ * @param RecurlyAdjustment $adjustment
+ *   The adjustment entity to return the total for.
+ * @param array $options
+ *   An array of options as passed in by Entity API.
+ * @param string $name
+ *   The name of the property being returned.
+ *
+ * @return int
+ *   The total of the adjustment, in cents.
+ */
+function recurly_entity_adjustment_total_get(RecurlyAdjustment $adjustment, array $options, $name) {
+  $total = $adjustment->quantity * $adjustment->unit_amount_in_cents;
+  return $total;
+}
+
