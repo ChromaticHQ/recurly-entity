@@ -6,7 +6,6 @@ dependencies[] = uuid
 core = 7.x
 package = Recurly
 
-files[] = recurly_entity.admin.inc
 files[] = entity/RecurlyAPIController.inc
 files[] = entity/RecurlyAdjustment.inc
 files[] = entity/RecurlyAdjustmentController.inc
