@@ -26,6 +26,8 @@ class RecurlyEntity extends Entity {
    * @param string $account_code
    *   The Recurly account code to find the entity IDs for.
    *
+   * @throws RecurlyEntityNoOwnerException
+   *
    * @return array
    *   An array with the entity type and entity ID.
    */
@@ -37,6 +39,8 @@ class RecurlyEntity extends Entity {
         'entity_id' => $local_account->entity_id,
       );
     }
+
+    throw new RecurlyEntityNoOwnerException(format_string('There is no owner associated with account code @account-code.', array('@account-code' => $account_code)));
   }
 
   /**
@@ -100,3 +104,5 @@ class RecurlyEntity extends Entity {
     }
   }
 }
+
+class RecurlyEntityNoOwnerException extends Exception {}
