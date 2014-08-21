@@ -52,37 +52,4 @@ class RecurlyAdjustment extends RecurlyEntity {
     );
   }
 
-  /**
-   * Validate that this adjustment has been collected.
-   *
-   * This method will update field_adjustment_collected if Recurly has
-   * collected the adjustment since it was imported. If the adjustment is a
-   * credit, then it will always be considered as "collected", but the
-   * collected field will only be updated when the adjustment is actually
-   * applied to an invoice.
-   *
-   * @throws RecurlyEntityInvoiceRequiredException
-   */
-  public function collected() {
-    /** @var EntityDrupalWrapper $adjustment_w */
-    $adjustment_w = entity_metadata_wrapper('recurly_adjustment', $this);
-    // This adjustment is already marked as collected, so skip checking with
-    // Recurly.
-    if ($this->field_adjustment_collected == TRUE) {
-      return;
-    }
-
-    // Only validate invoiced charges. We allow pending credits to pass this
-    // method.
-    if ($this->state == 'invoiced') {
-      $invoice = Recurly_Invoice::get($this->invoice_number);
-      $this->invoiceCollected($invoice);
-      $adjustment_w->field_adjustment_collected->set(TRUE);
-      $adjustment_w->save();
-    }
-    elseif ($this->unit_amount_in_cents > 0) {
-      throw new RecurlyEntityInvoiceRequiredException(format_string('Adjustment !uuid has not been invoiced yet.', array('!uuid' => $this->uuid)));
-    }
-  }
-
 }

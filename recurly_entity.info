@@ -13,7 +13,6 @@ files[] = entity/RecurlyAdjustmentUIController.inc
 files[] = entity/RecurlyAdjustmentMetadataController.inc
 files[] = entity/RecurlyEntityInvoiceException.inc
 files[] = entity/RecurlyEntityInvoiceFailedException.inc
-files[] = entity/RecurlyEntityInvoiceRequiredException.inc
 files[] = entity/RecurlyEntity.inc
 files[] = entity/RecurlyRemoteEntity.inc
 files[] = entity/RecurlySubscription.inc
