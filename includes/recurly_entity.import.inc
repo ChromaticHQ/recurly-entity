@@ -77,7 +77,10 @@ function recurly_entity_adjustment_queue($limit = 500) {
     // If this invoice can't be mapped to a local Recurly user, neither can the
     // associated adjustments.
     $account_code = $invoice->account->idFromHref();
-    if (!RecurlyEntity::entityOwner($account_code)) {
+    try {
+      RecurlyEntity::entityOwner($account_code);
+    }
+    catch (RecurlyEntityNoOwnerException $e) {
       watchdog('recurly_entity', 'Invoice @uuid was skipped during adjustment import as it is not owned by a local Drupal user or entity.', array('@uuid' => $invoice->uuid));
       $invoices->next();
       continue;
