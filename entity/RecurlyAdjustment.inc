@@ -51,5 +51,4 @@ class RecurlyAdjustment extends RecurlyEntity {
       'path' => 'recurly/adjustment/' . $this->id,
     );
   }
-
 }
