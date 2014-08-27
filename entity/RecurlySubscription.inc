@@ -48,7 +48,7 @@ class RecurlySubscription extends RecurlyEntity {
   /**
    * Return the subscription plan associated with this subscription.
    *
-   * @return RecurlySubscription
+   * @return RecurlySubscriptionPlan
    *   The Recurly Subscription Plan entity associated with this subscription.
    */
   public function plan() {
