@@ -17,6 +17,7 @@ files[] = entity/RecurlyEntity.inc
 files[] = entity/RecurlyRemoteEntity.inc
 files[] = entity/RecurlySubscription.inc
 files[] = entity/RecurlySubscriptionController.inc
+files[] = entity/RecurlySubscriptionMetadataController.inc
 files[] = entity/RecurlySubscriptionPlanController.inc
 files[] = entity/RecurlySubscriptionPlanUIController.inc
 files[] = entity/RecurlySubscriptionPlan.inc

@@ -71,6 +71,7 @@ function recurly_entity_entity_info() {
       'plural label' => t('Subscriptions'),
       'entity class' => 'RecurlySubscription',
       'controller class' => 'RecurlySubscriptionController',
+      'metadata controller class' => 'RecurlySubscriptionMetadataController',
       'extra fields controller class' => 'EntityDefaultExtraFieldsController',
       'base table' => 'recurly_subscription',
       'entity cache' => TRUE,
@@ -428,6 +429,30 @@ function recurly_adjustment_view(RecurlyAdjustment $adjustment) {
 }
 
 /**
+ * Getter callback for RecurlyEntity date properties.
+ *
+ * @param RecurlyEntity $data
+ *   The entity to read from.
+ * @param array $options
+ *   Property options.
+ * @param string $name
+ *   The name of the given property.
+ * @param string $type
+ *   The entity type.
+ * @param array $info
+ *   Entity property info for the given property.
+ *
+ * @see gc_recurly_entity_property_info()
+ */
+function recurly_entity_property_date_get($data, array $options, $name, $type, $info) {
+  if (!empty($data->{$name}->date)) {
+    return strtotime($data->{$name}->date . ' ' . $data->{$name}->timezone);
+  }
+
+  return NULL;
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  *
  * Alter the subscription plan listing form to allow importing of plans as local
@@ -474,4 +499,3 @@ function recurly_entity_adjustment_total_get(RecurlyAdjustment $adjustment, arra
   $total = $adjustment->quantity * $adjustment->unit_amount_in_cents;
   return $total;
 }
-
