@@ -44,7 +44,9 @@ function recurly_subscription_plan_form($form, &$form_state, $subscription_plan)
   $form = array();
 
   $form['subscription_plan_view'] = array(
-    '#weight' => -10,
+    '#title' => t('Recurly data'),
+    '#type' => 'fieldset',
+    '#weight' => 100,
     'plan' => $subscription_plan->view('recurly_data'),
   );
 
