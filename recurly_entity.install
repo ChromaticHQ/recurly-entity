@@ -40,6 +40,13 @@ function recurly_entity_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'state' => array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'default' => '',
+        'length' => 50,
+        'description' => 'The state of the subscription.',
+      ),
       'uuid' => $uuid_spec,
     ),
     'primary key' => array('id'),
@@ -47,6 +54,7 @@ function recurly_entity_schema() {
       'entity_type' => array('entity_type'),
       'entity_id' => array('entity_id'),
       'uuid' => array('uuid'),
+      'state' => array('state'),
     ),
   );
 
@@ -359,4 +367,43 @@ function recurly_entity_update_7105() {
   );
 
   db_change_field('recurly_subscription_plan', 'name', 'title', $spec);
+}
+
+/**
+ * Add status field to recurly_subscription table.
+ */
+function recurly_entity_update_7106() {
+  db_add_field('recurly_subscription', 'state', array(
+    'type' => 'varchar',
+    'not null' => TRUE,
+    'default' =>  '',
+    'length' => 50,
+    'description' => 'The status of the subscription.',
+  ));
+  db_add_index('recurly_subscription', 'state', array('state'));
+
+  // Reload all subscriptions to update state property.
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'recurly_subscription')
+    ->propertyCondition('state', '', '=');
+  $result = $query->execute();
+
+  if (isset($result['recurly_subscription'])) {
+    $updated_count = 0;
+    $subscription_ids_to_update = array_keys($result['recurly_subscription']);
+    watchdog('recurly_entity', t('Updating !count Recurly subscriptions.', array('!count' => count($subscription_ids_to_update))));
+    foreach ($subscription_ids_to_update as $subscription_id) {
+      try {
+        $subscription = entity_load_single('recurly_subscription', $subscription_id);
+        $subscription->save();
+        $updated_count++;
+      }
+      catch (Recurly_NotFoundError $e) {
+        watchdog('recurly_entity', t('Subscription !id not found in Recurly while updating subscriptions.', array('!id' => $subscription_id)), NULL, 'WATCHDOG_WARNING');
+      }
+    }
+    if ($updated_count) {
+      watchdog('recurly_entity', t('Successfully updated !count Recurly subscriptions.', array('!count' => count($updated_count))));
+    }
+  }
 }
