@@ -81,7 +81,7 @@ function recurly_entity_adjustment_queue($limit = 500) {
       RecurlyEntity::entityOwner($account_code);
     }
     catch (RecurlyEntityNoOwnerException $e) {
-      watchdog('recurly_entity', 'Invoice @uuid was skipped during adjustment import as it is not owned by a local Drupal user or entity.', array('@uuid' => $invoice->uuid));
+      watchdog('recurly_entity', 'Invoice @number was skipped during adjustment import as it is not owned by a local Drupal user or entity.', array('@number' => $invoice->invoice_number));
       $invoices->next();
       continue;
     }
