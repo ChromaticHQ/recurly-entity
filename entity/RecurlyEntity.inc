@@ -56,26 +56,37 @@ class RecurlyEntity extends Entity {
    *   failed.
    *
    * @throws RecurlyEntityInvoiceFailedException
+   * @throws RecurlyEntityInvoiceTimeoutException
    */
   public static function invoiceCollected(Recurly_Invoice $invoice, $retries = 3) {
-    // Collection of this invoice has already failed, so don't try to recollect
-    // it.
-    if ($invoice->state == 'failed') {
-      throw new RecurlyEntityInvoiceFailedException($invoice, format_string('Invoice !uuid is marked as failed.', array('!uuid' => $invoice->uuid)));
+
+    // Logging. Track each retry attempt.
+    watchdog('recurly', 'Trying to collect invoice.', array('invoice_state' => @$invoice->state, 'retries_remaining' => @$retries));
+
+    // Possible invoice states are collected, failed, open, and past_due.
+    while ($retries > 0) {
+      switch ($invoice->state) {
+        case 'open':
+          $invoice = Recurly_Invoice::get($invoice->invoice_number);
+          break;
+
+        case 'failed':
+        case 'past_due':
+          throw new RecurlyEntityInvoiceFailedException($invoice, format_string('Invoice !uuid is marked as failed.', array('!uuid' => $invoice->uuid)));
+
+        case 'collected':
+        default:
+          return;
+      }
+      // Wait before evaluating the invoice and trying again (in seconds).
+      sleep(variable_get('recurly_entity_invoice_wait', 1));
+      $retries--;
     }
 
-    // The invoice is still open, so let's give Recurly a chance to collect
-    // it.
-    if ($invoice->state == 'open' || $invoice->state == 'past_due') {
-      if ($retries > 0) {
-        sleep(variable_get('recurly_entity_invoice_wait', 1));
-        $invoice = Recurly_Invoice::get($invoice->invoice_number);
-        self::invoiceCollected($invoice, $retries - 1);
-      }
-      else {
-        throw new RecurlyEntityInvoiceFailedException($invoice, format_string('Unable to collect invoice !uuid.', array('!uuid' => $invoice->uuid)));
-      }
+    if ($retries <= 0) {
+      throw new RecurlyEntityInvoiceTimeoutException($invoice, format_string('Invoice validation for !uuid hit the retries limit.', array('!uuid' => $invoice->uuid)));
     }
+
   }
 
   /**
@@ -106,3 +117,4 @@ class RecurlyEntity extends Entity {
 }
 
 class RecurlyEntityNoOwnerException extends Exception {}
+class RecurlyEntityInvoiceTimeoutException extends RecurlyEntityInvoiceException {}
