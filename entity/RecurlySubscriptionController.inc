@@ -107,4 +107,8 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
   }
 }
 
+/**
+ * @class RecurlySubscriptionNotActiveException
+ * Thrown when a subscription was unable to be charged and activated.
+ */
 class RecurlySubscriptionNotActiveException extends Exception {}
