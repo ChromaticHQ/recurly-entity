@@ -78,7 +78,7 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
    * @param int $entity_id
    *   The id of the owner.
    *
-   * @return array
+   * @return RecurlySubscription[]
    *   An array of subscriptions associated with this entity, or an empty array
    *   if none were found.
    */
