@@ -17,7 +17,7 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
    *   The loaded Recurly subscription, or FALSE if one is not found.
    */
   public function loadByUuid($uuid) {
-    $entities = $this->loadByUuidMultiple(array($uuid));
+    $entities = $this->loadByUuidMultiple([$uuid]);
     return reset($entities);
   }
 
@@ -93,7 +93,7 @@ class RecurlySubscriptionController extends RecurlyAPIController implements Recu
       return $this->load(array_keys($results['recurly_subscription']));
     }
 
-    return array();
+    return [];
   }
 
   /**

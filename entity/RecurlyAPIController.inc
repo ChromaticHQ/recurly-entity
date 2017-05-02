@@ -16,8 +16,8 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
    * Note that if conditions() are specified, that the query will only match
    * entities that have been previously cached.
    */
-  public function load($ids = array(), $conditions = array()) {
-    $entities = array();
+  public function load($ids = [], $conditions = []) {
+    $entities = [];
     $original_ids = $ids;
 
     if (!empty($this->entityInfo['entity cache']) && $ids && !$conditions) {
@@ -67,7 +67,7 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
    *   Plan or the account_code for an Account.
    */
   public function loadFromRecurlyMultiple(array $ids) {
-    $entities = array();
+    $entities = [];
     foreach ($ids as $id) {
       $entities[] = $this->loadFromRecurly($id);
     }
@@ -85,7 +85,7 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
    *   The entity ID, or FALSE if one is not found.
    */
   public function entityId($uuid) {
-    $result = $this->entityIdMultiple(array($uuid));
+    $result = $this->entityIdMultiple([$uuid]);
     return reset($result);
   }
 
@@ -114,7 +114,7 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
    *   The unique Recurly UUID, or FALSE if one is not found.
    */
   public function recurlyCode($entity_id) {
-    $result = $this->recurlyCodeMultiple(array($entity_id));
+    $result = $this->recurlyCodeMultiple([$entity_id]);
     return reset($result);
   }
 
@@ -206,9 +206,9 @@ abstract class RecurlyAPIController extends EntityAPIController implements Recur
     // locally.
     if (isset($entity->id)) {
       // Attach our fields.
-      $wrapper = array($entity->id => $entity);
+      $wrapper = [$entity->id => $entity];
       $this->attachLoad($wrapper);
-      $this->entityCacheSet(array($entity));
+      $this->entityCacheSet([$entity]);
     }
 
     return $entity;

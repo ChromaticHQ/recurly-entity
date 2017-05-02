@@ -25,12 +25,12 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
   /**
    * Overrides EntityAPIController#buildContent().
    */
-  public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
+  public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = []) {
     // Add our theme functions to the build array.
     $build = parent::buildContent($entity, $view_mode, $langcode, $content);
-    $build += array(
+    $build += [
       '#theme' => 'recurly_subscription_plan_' . $view_mode,
-    );
+    ];
 
     if ($view_mode == 'recurly_data') {
       $build = $this->buildRecurlyData($build);
@@ -49,7 +49,7 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
    *   The loaded recurly subscription plan, or FALSE if one is not found.
    */
   public function loadByPlanCode($plan_code) {
-    $entities = $this->loadByPlanCodeMultiple(array($plan_code));
+    $entities = $this->loadByPlanCodeMultiple([$plan_code]);
     return reset($entities);
   }
 
@@ -77,7 +77,7 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
    *   The entity ID of the subscription plan, or FALSE if one is not found.
    */
   public function entityId($plan_code) {
-    $result = $this->entityIdMultiple(array($plan_code));
+    $result = $this->entityIdMultiple([$plan_code]);
     return reset($result);
   }
 
@@ -96,7 +96,7 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
     // plan code later.
 
     return db_select('recurly_subscription_plan', 's')
-      ->fields('s', array('plan_code', 'id'))
+      ->fields('s', ['plan_code', 'id'])
       ->condition('s.plan_code', $plan_codes, 'IN')
       ->execute()
       ->fetchAllKeyed();
@@ -112,7 +112,7 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
    *   The unique Recurly plan code, or FALSE if one is not found.
    */
   public function recurlyCode($entity_id) {
-    $result = $this->recurlyCodeMultiple(array($entity_id));
+    $result = $this->recurlyCodeMultiple([$entity_id]);
     return reset($result);
   }
 
@@ -126,7 +126,7 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
    *   An array of recurly plan codes.
    */
   public function recurlyCodeMultiple(array $entity_ids) {
-    $plan_codes = array();
+    $plan_codes = [];
 
     // First, check our static entity cache for any plans that have been loaded.
     $plans = $this->cacheGet($entity_ids);
@@ -143,7 +143,7 @@ class RecurlySubscriptionPlanController extends RecurlyAPIController implements 
 
     if (!empty($missed_ids)) {
       $plan_codes += db_select('recurly_subscription_plan', 's')
-        ->fields('s', array('id', 'plan_code'))
+        ->fields('s', ['id', 'plan_code'])
         ->condition('s.id', $missed_ids, 'IN')
         ->execute()
         ->fetchAllKeyed();

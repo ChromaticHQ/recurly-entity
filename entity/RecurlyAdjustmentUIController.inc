@@ -28,16 +28,16 @@ class RecurlyAdjustmentUIController extends EntityDefaultUIController {
    * Removes all links to clone an adjustment, since adjustments must be
    * created through Recurly.
    */
-  protected function overviewTableRow($conditions, $id, $entity, $additional_cols = array()) {
+  protected function overviewTableRow($conditions, $id, $entity, $additional_cols = []) {
     $entity_uri = entity_uri($this->entityType, $entity);
 
-    $row[] = array('data' => array(
+    $row[] = ['data' => [
       '#theme' => 'entity_ui_overview_item',
       '#label' => entity_label($this->entityType, $entity),
       '#name' => !empty($this->entityInfo['exportable']) ? entity_id($this->entityType, $entity) : FALSE,
       '#url' => $entity_uri ? $entity_uri : FALSE,
-      '#entity_type' => $this->entityType),
-    );
+      '#entity_type' => $this->entityType],
+    ];
 
     // Add in any passed additional cols.
     foreach ($additional_cols as $col) {
@@ -46,10 +46,10 @@ class RecurlyAdjustmentUIController extends EntityDefaultUIController {
 
     // Add a row for the exportable status.
     if (!empty($this->entityInfo['exportable'])) {
-      $row[] = array('data' => array(
+      $row[] = ['data' => [
         '#theme' => 'entity_status',
         '#status' => $entity->{$this->statusKey},
-      ));
+      ]];
     }
     // In case this is a bundle, we add links to the field ui tabs.
     $field_ui = !empty($this->entityInfo['bundle of']) && entity_type_is_fieldable($this->entityInfo['bundle of']) && module_exists('field_ui');

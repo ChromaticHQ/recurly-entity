@@ -13,7 +13,7 @@
  */
 function hook_recurly_subscription_precreate(Recurly_Subscription $subscription) {
   // Load the Drupal account associated with this subscription.
-  $account = user_load(recurly_account_load(array('account_code' => $subscription->account->account_code), TRUE)->entity_id);
+  $account = user_load(recurly_account_load(['account_code' => $subscription->account->account_code], TRUE)->entity_id);
 
   // Always give the admin user an amazing discount.
   if ($account->id == 1) {

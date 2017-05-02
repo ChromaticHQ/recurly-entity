@@ -5,7 +5,7 @@ class RecurlyAdjustment extends RecurlyEntity {
   /**
    * Override __construct to force an entity type.
    */
-  public function __construct(array $values = array(), $entityType = 'recurly_adjustment') {
+  public function __construct(array $values = [], $entityType = 'recurly_adjustment') {
     // Adjustments are not modifiable by the user.
     $this->status = ENTITY_FIXED;
 
@@ -47,8 +47,8 @@ class RecurlyAdjustment extends RecurlyEntity {
    * Overrides uri().
    */
   public function uri() {
-    return array(
+    return [
       'path' => 'recurly/adjustment/' . $this->id,
-    );
+    ];
   }
 }

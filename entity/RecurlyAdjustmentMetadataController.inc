@@ -15,14 +15,14 @@ class RecurlyAdjustmentMetadataController extends EntityDefaultMetadataControlle
     $properties['created_at']['type'] = 'date';
 
     // Add a property for the total amount of an adjustment.
-    $properties['total'] = array(
+    $properties['total'] = [
       'label' => t('Total'),
       'description' => t('The total amount of this adjustment.'),
       'type' => 'integer',
       'getter callback' => 'recurly_entity_adjustment_total_get',
       'computed' => TRUE,
       'entity views field' => TRUE,
-    );
+    ];
 
     return $info;
   }

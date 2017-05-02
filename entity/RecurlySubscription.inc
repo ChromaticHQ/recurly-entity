@@ -5,7 +5,7 @@ class RecurlySubscription extends RecurlyEntity {
   /**
    * Override __construct to force an entity type.
    */
-  public function __construct(array $values = array(), $entityType = 'recurly_subscription') {
+  public function __construct(array $values = [], $entityType = 'recurly_subscription') {
     // TODO: Can this be moved up to RecurlyEntity for everything with a UUID?
     // We need to map to a local ID if possible. This can happen if a plan has
     // been saved locally but our entity cache is empty.
@@ -28,7 +28,7 @@ class RecurlySubscription extends RecurlyEntity {
       $subscription_ends = $values['current_period_ends_at']->format('Y-m-d');
 
       // We explicitly don't want to translate these user-supplied fields.
-      $values['title'] = format_string('!name (!start to !end)', array('!name' => $values['plan']->name, '!start' => $subscription_starts, '!end' => $subscription_ends));
+      $values['title'] = format_string('!name (!start to !end)', ['!name' => $values['plan']->name, '!start' => $subscription_starts, '!end' => $subscription_ends]);
     }
 
     $this->setOwner($values);
@@ -40,9 +40,9 @@ class RecurlySubscription extends RecurlyEntity {
    * Override uri() for use with entity_uri().
    */
   public function uri() {
-    return array(
+    return [
       'path' => 'recurly/subscription/' . $this->id,
-    );
+    ];
   }
 
   /**

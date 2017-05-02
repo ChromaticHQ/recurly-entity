@@ -9,7 +9,7 @@ class RecurlySubscriptionPlan extends RecurlyEntity {
   /**
    * Override __construct to force an entity type.
    */
-  public function __construct(array $values = array(), $entityType = 'recurly_subscription_plan') {
+  public function __construct(array $values = [], $entityType = 'recurly_subscription_plan') {
     // We need to map to a local ID if possible. This can happen if a plan has
     // been saved locally but our entity cache is empty.
     if (!isset($values['id'])) {
@@ -27,9 +27,9 @@ class RecurlySubscriptionPlan extends RecurlyEntity {
    * Override uri() for use with entity_uri().
    */
   public function uri() {
-    return array(
+    return [
       'path' => 'recurly/subscription-plan/' . $this->id,
-    );
+    ];
   }
 
   /**

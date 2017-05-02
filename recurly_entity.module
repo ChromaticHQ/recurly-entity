@@ -4,41 +4,41 @@
  * Implements hook_menu().
  */
 function recurly_entity_menu() {
-  $items = array();
-  $items['recurly/subscription/%recurly_subscription'] = array(
+  $items = [];
+  $items['recurly/subscription/%recurly_subscription'] = [
     'page callback' => 'recurly_subscription_view',
-    'page arguments' => array(2),
+    'page arguments' => [2],
     'access callback' => 'recurly_subscription_access',
-    'access arguments' => array(2),
+    'access arguments' => [2],
     'type' => MENU_CALLBACK,
-  );
+  ];
 
-  $items['recurly/subscription-plan/%recurly_subscription_plan'] = array(
+  $items['recurly/subscription-plan/%recurly_subscription_plan'] = [
     'page callback' => 'recurly_subscription_plan_view',
-    'page arguments' => array(2),
-    'access arguments' => array('administer recurly'),
+    'page arguments' => [2],
+    'access arguments' => ['administer recurly'],
     'type' => MENU_CALLBACK,
-  );
+  ];
 
   // Note that we don't currently support adding a completely new subscription
   // plan to Recurly. Instead, they must be created in Recurly, and then
   // imported into the site to manage any custom field data.
-  $items['recurly/subscription-plan/add/%recurly_subscription_plan_code'] = array(
+  $items['recurly/subscription-plan/add/%recurly_subscription_plan_code'] = [
     'page callback' => 'recurly_subscription_plan_add',
-    'page arguments' => array(3),
-    'access arguments' => array('administer recurly'),
+    'page arguments' => [3],
+    'access arguments' => ['administer recurly'],
     'type' => MENU_CALLBACK,
     'file' => 'recurly_entity.admin.inc',
     'file path' => drupal_get_path('module', 'recurly_entity') .  '/includes',
-  );
+  ];
 
-  $items['recurly/adjustment/%recurly_adjustment'] = array(
+  $items['recurly/adjustment/%recurly_adjustment'] = [
     'page callback' => 'recurly_adjustment_view',
-    'page arguments' => array(2),
+    'page arguments' => [2],
     'access callback' => 'recurly_entity_adjustment_access',
-    'access arguments' => array(2),
+    'access arguments' => [2],
     'type' => MENU_CALLBACK,
-  );
+  ];
 
   return $items;
 }
@@ -65,8 +65,8 @@ function recurly_entity_menu_alter(&$items) {
  * Implements hook_entity_info().
  */
 function recurly_entity_entity_info() {
-  return array(
-    'recurly_subscription' => array(
+  return [
+    'recurly_subscription' => [
       'label' => t('Subscription'),
       'plural label' => t('Subscriptions'),
       'entity class' => 'RecurlySubscription',
@@ -75,32 +75,32 @@ function recurly_entity_entity_info() {
       'extra fields controller class' => 'EntityDefaultExtraFieldsController',
       'base table' => 'recurly_subscription',
       'entity cache' => TRUE,
-      'entity keys' => array(
+      'entity keys' => [
         'id' => 'id',
         'label' => 'title',
         'uuid' => 'uuid',
-      ),
+      ],
       // Use the default label() and uri() functions
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
       'fieldable' => TRUE,
-      'bundles' => array(
-        'recurly_subscription' => array(
+      'bundles' => [
+        'recurly_subscription' => [
           'label' => t('Subscription'),
-          'admin' => array(
+          'admin' => [
             'path' => 'admin/config/services/recurly/subscriptions',
-            'access arguments' => array('administer recurly'),
-          ),
-        ),
-      ),
+            'access arguments' => ['administer recurly'],
+          ],
+        ],
+      ],
       'module' => 'recurly_entity',
-      'view modes' => array(
-        'full' => array(
+      'view modes' => [
+        'full' => [
           'label' => t('Full subscription'),
-        ),
-      ),
-    ),
-    'recurly_subscription_plan' => array(
+        ],
+      ],
+    ],
+    'recurly_subscription_plan' => [
       'label' => t('Subscription Plan'),
       'plural label' => t('Subscription Plans'),
       'entity class' => 'RecurlySubscriptionPlan',
@@ -109,41 +109,41 @@ function recurly_entity_entity_info() {
       'extra fields controller class' => 'EntityDefaultExtraFieldsController',
       'base table' => 'recurly_subscription_plan',
       'entity cache' => TRUE,
-      'entity keys' => array(
+      'entity keys' => [
         'id' => 'id',
         'label' => 'title',
-      ),
+      ],
       // Use the default label() and uri() functions
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
       'access callback' => 'recurly_entity_subscription_plan_access',
       'fieldable' => TRUE,
-      'bundles' => array(
-        'recurly_subscription_plan' => array(
+      'bundles' => [
+        'recurly_subscription_plan' => [
           'label' => t('Subscription plan'),
-          'admin' => array(
+          'admin' => [
             'path' => 'admin/config/services/recurly/subscription-plans',
-            'access arguments' => array('administer recurly'),
-          ),
-        ),
-      ),
+            'access arguments' => ['administer recurly'],
+          ],
+        ],
+      ],
       'module' => 'recurly_entity',
-      'admin ui' => array(
+      'admin ui' => [
         'path' => 'admin/content/recurly_subscription_plans',
         'file' => 'recurly_entity.admin.inc',
         'file path' => drupal_get_path('module', 'recurly_entity') .  '/includes',
         'controller class' => 'RecurlySubscriptionPlanUIController',
-      ),
-      'view modes' => array(
-        'full' => array(
+      ],
+      'view modes' => [
+        'full' => [
           'label' => t('Full subscription plan'),
-        ),
-        'recurly_data' => array(
+        ],
+        'recurly_data' => [
           'label' => t('Recurly data only'),
-        ),
-      ),
-    ),
-    'recurly_adjustment' => array(
+        ],
+      ],
+    ],
+    'recurly_adjustment' => [
       'label' => t('Adjustment'),
       'plural label' => t('Adjustments'),
       'entity class' => 'RecurlyAdjustment',
@@ -152,66 +152,66 @@ function recurly_entity_entity_info() {
       'extra fields controller class' => 'EntityDefaultExtraFieldsController',
       'base table' => 'recurly_adjustment',
       'entity cache' => TRUE,
-      'entity keys' => array(
+      'entity keys' => [
         'id' => 'id',
         'label' => 'title',
         'uuid' => 'uuid',
-      ),
+      ],
       // Use the default label() and uri() functions.
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
       'access callback' => 'recurly_entity_adjustment_access',
       'fieldable' => TRUE,
-      'bundles' => array(
-        'recurly_adjustment' => array(
+      'bundles' => [
+        'recurly_adjustment' => [
           'label' => t('Adjustment'),
-          'admin' => array(
+          'admin' => [
             'path' => 'admin/config/services/recurly/adjustments',
-            'access arguments' => array('administer recurly'),
-          ),
-        ),
-      ),
+            'access arguments' => ['administer recurly'],
+          ],
+        ],
+      ],
       'module' => 'recurly_entity',
-      'admin ui' => array(
+      'admin ui' => [
         'path' => 'admin/content/recurly-adjustment',
         'controller class' => 'RecurlyAdjustmentUIController',
-      ),
-      'view modes' => array(
-        'full' => array(
+      ],
+      'view modes' => [
+        'full' => [
           'label' => t('Full adjustment'),
-        ),
-      ),
-    ),
-  );
+        ],
+      ],
+    ],
+  ];
 }
 
 /**
  * Implements hook_flush_caches().
  */
 function recurly_entity_flush_caches() {
-  return array(
+  return [
     'cache_entity_recurly_subscription',
     'cache_entity_recurly_subscription_plan',
     'cache_entity_recurly_adjustment',
-  );
+  ];
 }
 
 /**
  * Implements hook_permission().
  */
 function recurly_entity_permission() {
-  $permissions = array(
-    'administer recurly subscription plans' => array(
+  $permissions = [
+    'administer recurly subscription plans' => [
       'title' => t('Administer Recurly subscription plans'),
       'description' => t('Allows users to manage imported Recurly subscription plans.'),
       'restrict access' => TRUE,
-    ),
-    'administer recurly adjustments' => array(
+    ],
+    'administer recurly adjustments' => [
       'title' => t('Administer Recurly adjustments'),
       'description' => t('Allows users to manage imported Recurly adjustments.'),
       'restrict access' => TRUE,
-    ),
-  );
+    ],
+  ];
 
   return $permissions;
 }
@@ -225,7 +225,7 @@ function recurly_entity_help($path, $arg) {
       $output = '<p>' . t('Subscription plans must be imported from Recurly.com before they can be edited.') . '</p>';
       if (user_access('administer recurly')) {
         $settings_link = l(t('Recurly module settings'), 'admin/config/services/recurly/subscription-plans');
-        $output .= '<p>' . t('Import subscription plans in the !settings_link.', array('!settings_link' => $settings_link)) . '</p>';
+        $output .= '<p>' . t('Import subscription plans in the !settings_link.', ['!settings_link' => $settings_link]) . '</p>';
       }
       return $output;
   }
@@ -245,15 +245,15 @@ function recurly_entity_cron() {
  * Implements hook_cron_queue_info().
  */
 function recurly_entity_cron_queue_info() {
-  $queues = array();
+  $queues = [];
 
   // We allow our queue to be run even if Queue Runner is enabled. This ensures
   // that if any queued jobs are left over after the module was enabled, they
   // will still be processed by cron.
-  $queues['recurly_entity_adjustment_import'] = array(
+  $queues['recurly_entity_adjustment_import'] = [
     'worker callback' => 'recurly_entity_adjustment_import_callback',
     'time' => 10,
-  );
+  ];
 
   return $queues;
 }
@@ -262,21 +262,21 @@ function recurly_entity_cron_queue_info() {
  * Implements hook_views_api().
  */
 function recurly_entity_views_api() {
-  return array(
+  return [
     'api' => 3,
     'path' => drupal_get_path('module', 'recurly_entity') . '/views',
-  );
+  ];
 }
 
 /**
  * Implements hook_queue_runner_workers().
  */
 function recurly_entity_queue_runner_workers() {
-  return array(
-    'recurly_entity_adjustment_import' => array(
+  return [
+    'recurly_entity_adjustment_import' => [
       'callback' => 'recurly_entity_adjustment_import_callback',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -312,21 +312,21 @@ function recurly_entity_adjustment_access($op, $adjustment = NULL, $account = NU
  * Implements hook_theme().
  */
 function recurly_entity_theme() {
-  $info = array();
-  $info['recurly_subscription_plan'] = array(
+  $info = [];
+  $info['recurly_subscription_plan'] = [
     'render element' => 'elements',
     'path' => drupal_get_path('module', 'recurly_entity') . '/theme',
     'template' => 'recurly_subscription_plan',
-  );
+  ];
 
   // Add in theme hooks for our entities and view modes.
   $entity_info = entity_get_info('recurly_subscription_plan');
   foreach (array_keys($entity_info['view modes']) as $view_mode) {
-    $info['recurly_subscription_plan_' . $view_mode] = array(
-      'variables' => array('content' => NULL),
+    $info['recurly_subscription_plan_' . $view_mode] = [
+      'variables' => ['content' => NULL],
       'path' => drupal_get_path('module', 'recurly_entity') . '/theme',
       'template' => 'recurly_subscription_plan--' . $view_mode,
-    );
+    ];
     $info['recurly_subscription_plan_' . $view_mode]['variables']['view_mode'] = $view_mode;
   }
 
@@ -411,7 +411,7 @@ function recurly_adjustment_load($id) {
  */
 function recurly_subscription_plan_view(RecurlySubscriptionPlan $subscription_plan) {
   drupal_set_title($subscription_plan->label());
-  return entity_view('recurly_subscription_plan', array($subscription_plan));
+  return entity_view('recurly_subscription_plan', [$subscription_plan]);
 }
 
 /**
@@ -425,7 +425,7 @@ function recurly_subscription_plan_view(RecurlySubscriptionPlan $subscription_pl
  */
 function recurly_adjustment_view(RecurlyAdjustment $adjustment) {
   drupal_set_title($adjustment->label());
-  return entity_view('recurly_adjustment', array($adjustment));
+  return entity_view('recurly_adjustment', [$adjustment]);
 }
 
 /**
@@ -468,16 +468,16 @@ function recurly_entity_form_recurly_subscription_plans_form_alter(&$form, &$for
     // Add links to import or edit a local plan entity.
     $plan_entity = entity_get_controller('recurly_subscription_plan')->loadByPlanCode($plan_code);
     if (!$plan_entity || !isset($plan_entity->id)) {
-      $details['operations']['#links']['import'] = array(
+      $details['operations']['#links']['import'] = [
         'title' => t('import subscription plan'),
         'href' => 'recurly/subscription-plan/add/' . $plan_code,
-      );
+      ];
     }
     else {
-      $details['operations']['#links']['edit_entity'] = array(
+      $details['operations']['#links']['edit_entity'] = [
         'title' => t('edit subscription fields'),
         'href' => 'admin/content/recurly_subscription_plans/manage/' . $plan_entity->id,
-      );
+      ];
     }
   }
 }

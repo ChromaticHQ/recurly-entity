@@ -41,30 +41,30 @@ function recurly_subscription_plan_add(RecurlySubscriptionPlan $subscription_pla
  *   The recurly_subscription_plan entity object to edit.
  */
 function recurly_subscription_plan_form($form, &$form_state, $subscription_plan) {
-  $form = array();
+  $form = [];
 
-  $form['subscription_plan_view'] = array(
+  $form['subscription_plan_view'] = [
     '#title' => t('Recurly data'),
     '#type' => 'fieldset',
     '#weight' => 100,
     'plan' => $subscription_plan->view('recurly_data'),
-  );
+  ];
 
   $form_state['recurly_subscription_plan'] = $subscription_plan;
   $form_state['entity_type'] = 'recurly_subscription_plan';
   field_attach_form('recurly_subscription_plan', $subscription_plan, $form, $form_state);
 
-  $form['actions'] = array(
+  $form['actions'] = [
     '#type' => 'container',
-    '#attributes' => array('class' => array('form-actions')),
+    '#attributes' => ['class' => ['form-actions']],
     '#weight' => 400,
-  );
+  ];
 
-  $form['actions']['submit'] = array(
+  $form['actions']['submit'] = [
     '#type' => 'submit',
     '#value' => t('Save subscription plan'),
-    '#submit' => array('recurly_subscription_plan_form_submit'),
-  );
+    '#submit' => ['recurly_subscription_plan_form_submit'],
+  ];
 
   return $form;
 }

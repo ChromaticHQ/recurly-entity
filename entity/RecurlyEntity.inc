@@ -12,7 +12,7 @@ class RecurlyEntity extends Entity {
    * The primary purpose of this is to ensure that the Recurly PHP library has
    * been loaded as it doesn't use Drupal's autoloader.
    */
-  public function __construct(array $values = array(), $entityType = NULL) {
+  public function __construct(array $values = [], $entityType = NULL) {
     recurly_client_initialize();
     parent::__construct($values, $entityType);
   }
@@ -32,15 +32,15 @@ class RecurlyEntity extends Entity {
    *   An array with the entity type and entity ID.
    */
   public static function entityOwner($account_code) {
-    $local_account = recurly_account_load(array('account_code' => $account_code), TRUE);
+    $local_account = recurly_account_load(['account_code' => $account_code], TRUE);
     if ($local_account) {
-      return array(
+      return [
         'entity_type' => $local_account->entity_type,
         'entity_id' => $local_account->entity_id,
-      );
+      ];
     }
 
-    throw new RecurlyEntityNoOwnerException(format_string('There is no owner associated with account code @account-code.', array('@account-code' => $account_code)));
+    throw new RecurlyEntityNoOwnerException(format_string('There is no owner associated with account code @account-code.', ['@account-code' => $account_code]));
   }
 
   /**
@@ -61,7 +61,7 @@ class RecurlyEntity extends Entity {
   public static function invoiceCollected(Recurly_Invoice $invoice, $retries = 3) {
 
     // Logging. Track each retry attempt.
-    watchdog('recurly', 'Trying to collect invoice.', array('invoice_state' => @$invoice->state, 'retries_remaining' => @$retries));
+    watchdog('recurly', 'Trying to collect invoice.', ['invoice_state' => @$invoice->state, 'retries_remaining' => @$retries]);
 
     // Possible invoice states are collected, failed, open, and past_due.
     while ($retries > 0) {
@@ -72,7 +72,7 @@ class RecurlyEntity extends Entity {
 
         case 'failed':
         case 'past_due':
-          throw new RecurlyEntityInvoiceFailedException($invoice, format_string('Invoice !uuid is marked as failed.', array('!uuid' => $invoice->uuid)));
+          throw new RecurlyEntityInvoiceFailedException($invoice, format_string('Invoice !uuid is marked as failed.', ['!uuid' => $invoice->uuid]));
 
         case 'collected':
         default:
@@ -84,7 +84,7 @@ class RecurlyEntity extends Entity {
     }
 
     if ($retries <= 0) {
-      throw new RecurlyEntityInvoiceTimeoutException($invoice, format_string('Invoice validation for !uuid hit the retries limit.', array('!uuid' => $invoice->uuid)));
+      throw new RecurlyEntityInvoiceTimeoutException($invoice, format_string('Invoice validation for !uuid hit the retries limit.', ['!uuid' => $invoice->uuid]));
     }
 
   }

@@ -17,35 +17,35 @@ function recurly_entity_views_data_alter(&$data) {
 
   // The relationship between Subscriptions and Subscription Plans uses the
   // plan code, and not the entity ID, so we have to alter the keys.
-  $data['recurly_subscription']['plan_code'] = array(
-    'relationship' => array(
+  $data['recurly_subscription']['plan_code'] = [
+    'relationship' => [
       'label' => 'Subscription Plan',
       'handler' => 'views_handler_relationship',
       'base' => 'recurly_subscription_plan',
       'base field' => 'plan_code',
       'relationship field' => 'plan_code',
-    ),
+    ],
     'title' => 'Plan code',
     'help' => 'Subscription "plan_code" property.',
-    'field' => array(
+    'field' => [
       'real field' => 'plan_code',
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
       'float' => FALSE,
-    ),
-    'sort' => array(
+    ],
+    'sort' => [
       'real field' => 'plan_code',
       'handler' => 'views_handler_sort',
-    ),
-    'filter' => array(
+    ],
+    'filter' => [
       'real field' => 'plan_code',
       'handler' => 'views_handler_filter_numeric',
-    ),
-    'argument' => array(
+    ],
+    'argument' => [
       'real field' => 'plan_code',
       'handler' => 'views_handler_argument_numeric',
-    ),
-  );
+    ],
+  ];
   return $data;
 }
 
